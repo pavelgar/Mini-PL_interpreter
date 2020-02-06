@@ -7,6 +7,8 @@ This is assignement for University of Helsinki course on Compilers.
 
 ### Token patterns
 
+- reserved keywords: `/(var|for|end|int|do|read|print|int|string|bool|assert)/g`
+
 ### Modified context-free grammar
 
 ### Abstract syntax trees
