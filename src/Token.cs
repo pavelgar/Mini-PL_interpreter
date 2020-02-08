@@ -1,41 +1,18 @@
-public enum Type {
-    VAR,
-    FOR,
-    END,
-    IN,
-    DO,
-    READ,
-    PRINT,
-    INT,
-    STR,
-    BOOL,
-    ASSERT,
-    ADD,
-    SUB,
-    MULT,
-    DIV,
-    LT,
-    EQ,
-    AND,
-    NOT,
-    IDENT,
-    INTEGER,
-    STRING,
-    MLCS,
-    MLCE,
-    COMMENT,
-    SEMI,
-    RANGE,
-    EXPS,
-    EXPE,
-    ASSIGN
-}
+namespace miniPL {
+    public struct Token {
+        readonly TokenType type;
+        readonly string rawValue;
+        readonly object literal;
+        readonly int line;
+        public Token(TokenType type, string rawValue, object literal, int line) {
+            this.type = type;
+            this.rawValue = rawValue;
+            this.literal = literal;
+            this.line = line;
+        }
 
-public struct Token {
-    public Type type;
-    public string value;
-    public Token(Type type, string value) {
-        this.type = type;
-        this.value = value;
+        public override string ToString() {
+            return "Token(" + type + ", " + rawValue + ")";
+        }
     }
 }

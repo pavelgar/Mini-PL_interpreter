@@ -1,18 +1,50 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace miniPL {
     class Program {
+        static bool hadError = false;
         static void Main(string[] args) {
-            string[] lines = File.ReadAllLines("./test_program.txt");
-
-            Console.WriteLine("Contents of test_program.txt = ");
-            foreach (string line in lines) {
-                Console.WriteLine("\t" + line);
+            if (args.Length > 1) {
+                Console.WriteLine("ERROR: Too many arguments");
+                Environment.Exit(64);
+            } else if (args.Length == 1) {
+                RunFile(args[0]);
+            } else {
+                RunPrompt();
             }
+        }
 
-            Console.WriteLine("Press any key to exit.");
-            Console.ReadKey();
+        private static void RunFile(string path) {
+            byte[] bytes = File.ReadAllBytes(path);
+            Run(Encoding.UTF8.GetString(bytes));
+        }
+
+        private static void RunPrompt() {
+            for (;;) {
+                Console.Write("> ");
+                Run(Console.ReadLine());
+            }
+        }
+
+        private static void Run(string source) {
+            Scanner scanner = new Scanner(source);
+            List<Token> tokens = scanner.ScanTokens();
+
+            foreach (Token token in tokens) {
+                Console.WriteLine(token);
+            }
+        }
+
+        public static void Error(int line, string message) {
+            Report(line, "", message);
+        }
+
+        static void Report(int line, string where, string message) {
+            Console.Error.WriteLine("[line " + line + "] Error " + where + ": " + message);
+            hadError = true;
         }
     }
 }
