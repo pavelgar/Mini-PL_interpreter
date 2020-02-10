@@ -1,6 +1,14 @@
 namespace miniPL {
     public interface Expression { }
 
+    public struct Group : Expression {
+        readonly Expression expression;
+
+        public Group(Expression expression) {
+            this.expression = expression;
+        }
+    }
+
     public struct Binary : Expression {
         readonly Expression left;
         readonly Token op;
