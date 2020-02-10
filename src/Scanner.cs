@@ -106,12 +106,12 @@ namespace miniPL {
 
                     // Number literal
                 case var digit when char.IsDigit(c):
-                    ParseNumber();
+                    AddToken(TokenType.INTEGER, ParseNumber());
                 break;
 
                 // Identifiers and keywords
                 case var letter when char.IsLetter(c):
-                    ParseIdentifier();
+                    AddToken(ParseIdentifier());
                 break;
 
                 default:
@@ -120,7 +120,7 @@ namespace miniPL {
             }
         }
 
-        private void ParseIdentifier() {
+        private TokenType ParseIdentifier() {
             // Read while there are letters, digits or underscores
             while (char.IsLetterOrDigit(Peek()) || Peek() == '_') Advance();
 
@@ -129,49 +129,37 @@ namespace miniPL {
             // Check if the identifier is a reserved keyword
             switch (text) {
                 case "var":
-                    AddToken(TokenType.VAR);
-                    break;
+                    return TokenType.VAR;
                 case "for":
-                    AddToken(TokenType.FOR);
-                    break;
+                    return TokenType.FOR;
                 case "end":
-                    AddToken(TokenType.END);
-                    break;
+                    return TokenType.END;
                 case "in":
-                    AddToken(TokenType.IN);
-                    break;
+                    return TokenType.IN;
                 case "do":
-                    AddToken(TokenType.DO);
-                    break;
+                    return TokenType.DO;
                 case "read":
-                    AddToken(TokenType.READ);
-                    break;
+                    return TokenType.READ;
                 case "print":
-                    AddToken(TokenType.PRINT);
-                    break;
+                    return TokenType.PRINT;
                 case "int":
-                    AddToken(TokenType.INT);
-                    break;
+                    return TokenType.INT;
                 case "string":
-                    AddToken(TokenType.STR);
-                    break;
+                    return TokenType.STR;
                 case "bool":
-                    AddToken(TokenType.BOOL);
-                    break;
+                    return TokenType.BOOL;
                 case "assert":
-                    AddToken(TokenType.ASSERT);
-                    break;
+                    return TokenType.ASSERT;
                 default:
-                    AddToken(TokenType.IDENT);
-                    break;
+                    return TokenType.IDENT;
             }
         }
 
-        private void ParseNumber() {
+        private int ParseNumber() {
             // Read while there are digits
             while (char.IsDigit(Peek())) Advance();
             string literal = source.Substring(start, current - start);
-            AddToken(TokenType.INTEGER, int.Parse(literal));
+            return int.Parse(literal);
         }
 
         private void ParseString() {
@@ -278,6 +266,5 @@ namespace miniPL {
             string raw = source.Substring(start, current - start);
             tokens.Add(new Token(type, raw, literal, line));
         }
-
     }
 }
