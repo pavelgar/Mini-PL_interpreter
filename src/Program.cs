@@ -38,13 +38,10 @@ namespace miniPL {
             }
         }
 
-        public static void Error(int line, string message) {
-            Report(line, "", message);
-        }
-
-        static void Report(int line, string where, string message) {
-            Console.Error.WriteLine("[line " + line + "] Error " + where + ": " + message);
+        public static void Error(int line, int column, string message) {
+            Console.Error.WriteLine("[" + line + ":" + column + "] Error" + ": " + message);
             hadError = true;
         }
+
     }
 }

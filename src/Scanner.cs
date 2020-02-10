@@ -8,6 +8,7 @@ namespace miniPL {
         private int start = 0;
         private int current = 0;
         private int line = 1;
+        private int column = 1;
 
         public Scanner(string source) {
             this.source = source;
@@ -36,7 +37,6 @@ namespace miniPL {
                 case '\t':
                     break;
                 case '\n':
-                    line++;
                     break;
 
                     // Single character tokens
@@ -76,7 +76,7 @@ namespace miniPL {
                     if (Match('.')) {
                         AddToken(TokenType.RANGE);
                     } else {
-                        Program.Error(line, "Unexpected character \"" + c + "\".");
+                        Program.Error(line, column, "Unexpected character \"" + c + "\".");
                     }
                     break;
                 case ':':
@@ -115,7 +115,7 @@ namespace miniPL {
                 break;
 
                 default:
-                    Program.Error(line, "Unexpected character \"" + c + "\".");
+                    Program.Error(line, column, "Unexpected character \"" + c + "\".");
                     break;
             }
         }
@@ -175,31 +175,40 @@ namespace miniPL {
         }
 
         private void ParseString() {
+            // Remember the start of the string. Used for error handling.
+            var stringStart = (line, column);
             // Read characters until EOF or closing ".
             while (!IsEOF() && Peek() != '"') {
-                // Remember to count lines
-                if (Peek() == '\n') line++;
+                // Skip twice if next character is escaped
+                if (Peek() == '\\' && PeekNext() != '\n') {
+                    Advance();
+                }
                 Advance();
             }
 
             // Catch unterminated string
             if (IsEOF()) {
-                Program.Error(line, "Unterminated string.");
+                Program.Error(
+                    stringStart.line,
+                    stringStart.column,
+                    "Unterminated string."
+                );
                 return;
             }
 
             // Consume the closing ".
             Advance();
+
             // Trim the surrounding quotes
             string value = source.Substring(start + 1, current - start - 2);
             AddToken(TokenType.STRING, value);
         }
 
         private void ParseMultilineComment() {
+            // Remember the start of the comment. Used for error handling.
+            var stringStart = (line, column);
             // Read characters until EOF or closing */.
             while (!IsEOF() && (Peek() != '*' || PeekNext() != '/')) {
-                // Remember to count lines
-                if (Peek() == '\n') line++;
                 // Check if a new multiline comment is starting /*
                 if (Peek() == '/' && PeekNext() == '*') {
                     Advance();
@@ -212,7 +221,11 @@ namespace miniPL {
 
             // Catch unterminated comment
             if (IsEOF()) {
-                Program.Error(line, "Unterminated multiline comment.");
+                Program.Error(
+                    stringStart.line,
+                    stringStart.column,
+                    "Unterminated multiline comment."
+                );
                 return;
             }
 
@@ -222,8 +235,13 @@ namespace miniPL {
         }
 
         private char Advance() {
-            current++;
-            return source[current - 1];
+            if (source[current] == '\n') {
+                line++;
+                column = 1;
+            } else {
+                column++;
+            }
+            return source[current++];
         }
 
         private char Peek() {
@@ -244,7 +262,7 @@ namespace miniPL {
             // Check if the next character matches expected
             if (source[current] != expected) return false;
 
-            current++;
+            Advance();
             return true;
         }
 
@@ -257,8 +275,8 @@ namespace miniPL {
         }
 
         private void AddToken(TokenType type, object literal) {
-            string text = source.Substring(start, current - start);
-            tokens.Add(new Token(type, text, literal, line));
+            string raw = source.Substring(start, current - start);
+            tokens.Add(new Token(type, raw, literal, line));
         }
 
     }
