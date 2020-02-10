@@ -1,4 +1,5 @@
 var nTimes : int := 0;
+/* This /* is /*a*/ nested*/comment**/
 print "How many times?";
 read nTimes;
 var x : int;

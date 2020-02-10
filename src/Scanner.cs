@@ -196,13 +196,12 @@ namespace miniPL {
         }
 
         private void ParseMultilineComment() {
-            Console.WriteLine(source);
             // Read characters until EOF or closing */.
-            while (!IsEOF() && Peek() != '*' && PeekNext() != '/') {
+            while (!IsEOF() && (Peek() != '*' || PeekNext() != '/')) {
                 // Remember to count lines
                 if (Peek() == '\n') line++;
                 // Check if a new multiline comment is starting /*
-                if (!IsEOF() && Peek() == '/' && PeekNext() == '*') {
+                if (Peek() == '/' && PeekNext() == '*') {
                     Advance();
                     Advance();
                     ParseMultilineComment();
