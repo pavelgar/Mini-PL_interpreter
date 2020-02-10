@@ -84,10 +84,11 @@ This is assignement for University of Helsinki course on Compilers.
 
 ## Work hour log
 
-| Date | Time (h) | Work done                                                                     |
-| :--: | :------- | :---------------------------------------------------------------------------- |
-| 6.2. | 3        | Setting up the project and familiarizing myself with C# and the requirements. |
-| 7.2. | 5        | Writing documentation, reading C# docs and writing basics.                    |
-| 8.2. | 4        | Updating documentation, writing the lexer.                                    |
+| Date  | Time (h) | Work done                                                                     |
+| :---: | :------- | :---------------------------------------------------------------------------- |
+| 6.2.  | 3        | Setting up the project and familiarizing myself with C# and the requirements. |
+| 7.2.  | 5        | Writing documentation, reading C# docs and writing basics.                    |
+| 8.2.  | 4        | Updating documentation, writing the lexer.                                    |
+| 10.2. | 4        | Fixing multiline comment parsing and starting on ASTs.                        |
 
-**Total:** 12h
+**Total:** 16h
