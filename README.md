@@ -7,54 +7,54 @@ This is assignement for University of Helsinki course on Compilers.
 
 ### Token patterns
 
-|     token      | regex pattern             | explanation                             |
-| :------------: | :------------------------ | :-------------------------------------- |
+|     token      | regex pattern           | explanation                             |
+| :------------: | :---------------------- | :-------------------------------------- |
 |  **Keywords**  |
-|      VAR       | `var`                     | Variable assignment                     |
-|      FOR       | `for`                     | For-loop constructor                    |
-|      END       | `end`                     | End code block                          |
-|       IN       | `in`                      | Range specifier                         |
-|       DO       | `do`                      | Start code block                        |
-|      READ      | `read`                    | Read from stdin                         |
-|     PRINT      | `print`                   | Write to stdout                         |
-|      INT       | `int`                     | Integer type                            |
-|      STR       | `string`                  | String type                             |
-|      BOOL      | `bool`                    | Boolean type                            |
-|     ASSERT     | `assert`                  | Program state verification              |
+|      VAR       | `var`                   | Variable assignment                     |
+|      FOR       | `for`                   | For-loop constructor                    |
+|      END       | `end`                   | End code block                          |
+|       IN       | `in`                    | Range specifier                         |
+|       DO       | `do`                    | Start code block                        |
+|      READ      | `read`                  | Read from stdin                         |
+|     PRINT      | `print`                 | Write to stdout                         |
+|      INT       | `int`                   | Integer type                            |
+|      STR       | `string`                | String type                             |
+|      BOOL      | `bool`                  | Boolean type                            |
+|     ASSERT     | `assert`                | Program state verification              |
 | **Arithmetic** |
-|      ADD       | `\+`                      | Arithmetic add and string concatenation |
-|      SUB       | `\-`                      | Arithmetic subtraction                  |
-|      MULT      | `\*`                      | Arithmetic multiplication               |
-|      DIV       | `\/`                      | Arithmetic division                     |
+|      ADD       | `\+`                    | Arithmetic add and string concatenation |
+|      SUB       | `\-`                    | Arithmetic subtraction                  |
+|      MULT      | `\*`                    | Arithmetic multiplication               |
+|      DIV       | `\/`                    | Arithmetic division                     |
 |   **Logic**    |
-|       LT       | `<`                       | Less-than comparison                    |
-|       EQ       | `=`                       | Equality comparison                     |
-|      AND       | `&`                       | Logical AND operator                    |
-|      NOT       | `!`                       | Logical NOT operator                    |
+|       LT       | `<`                     | Less-than comparison                    |
+|       EQ       | `=`                     | Equality comparison                     |
+|      AND       | `&`                     | Logical AND operator                    |
+|      NOT       | `!`                     | Logical NOT operator                    |
 |  **Literals**  |
-|     IDENT      | `[a-zA-Z][a-zA-Z0-9_]*`   | Identifier                              |
-|    INTEGER     | `[0-9]+`                  | Integer constant                        |
-|     STRING     | `\"(\\[^\n]|[^"\n\\])*\"` | String constant                         |
+|     IDENT      | `[a-zA-Z][a-zA-Z0-9_]*` | Identifier                              |
+|    INTEGER     | `[0-9]+`                | Integer constant                        |
+|     STRING     | `\"(\\.|[^"\\])*\"`     | String constant                         |
 |   **Other**    |
-|     COLON      | `\:`                      | Variable type assignment(?)             |
-|   SEMICOLON    | `\;`                      | End of statement                        |
-|     RANGE      | `\.\.`                    | Create sequence of integers             |
-|   LEFT_PAREN   | `\(`                      | Start nested expression                 |
-|  RIGHT_PAREN   | `\)`                      | End nested expression                   |
-|     ASSIGN     | `:=`                      | Variable assignment                     |
-|      EOF       |                           | End of file                             |
+|     COLON      | `\:`                    | Variable type assignment(?)             |
+|   SEMICOLON    | `\;`                    | End of statement                        |
+|     RANGE      | `\.\.`                  | Create sequence of integers             |
+|   LEFT_PAREN   | `\(`                    | Start nested expression                 |
+|  RIGHT_PAREN   | `\)`                    | End nested expression                   |
+|     ASSIGN     | `:=`                    | Variable assignment                     |
+|      EOF       |                         | End of file                             |
 
 ### Modified context-free grammar
 
 ```
 <prog>  ::= <stmts>
 
-<stmts> ::= <stmt> ";" ( <stmt> ";" )*
+<stmts> ::= ( <stmt> ";" )+
 
 <stmt>  ::= "var" <var_ident> ":" <type> [ ":=" <expr> ]
         | <var_ident> ":=" <expr>
         | "for" <var_ident> "in" <expr> ".." <expr> "do"
-            <stmts>
+              <stmts>
           "end" "for"
         | "read" <var_ident>
         | "print" <expr>
@@ -64,6 +64,10 @@ This is assignement for University of Helsinki course on Compilers.
         | [ <unary_op> ] <opnd>
 
 <opnd>  ::= <int> | <string> | <var_ident> | "(" expr ")"
+
+<op>    ::= "+" | "-" | "*" | "/" | "<" | "=" | "&"
+
+<unary_op> ::= "!"
 
 <type>  ::= "int" | "string" | "bool"
 
