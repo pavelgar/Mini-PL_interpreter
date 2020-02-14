@@ -31,11 +31,7 @@ namespace miniPL {
 
         private static void Run(string source) {
             Scanner scanner = new Scanner(source);
-            List<Token> tokens = scanner.ScanTokens();
-
-            foreach (Token token in tokens) {
-                Console.WriteLine(token);
-            }
+            scanner.ScanTokens();
         }
 
         public static void Error(int line, int column, string message) {

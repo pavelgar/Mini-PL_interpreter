@@ -38,6 +38,7 @@ namespace miniPL {
         RIGHT_PAREN,
         ASSIGN,
 
-        EOF
+        EOF,
+        PARSE_ERROR
     }
 }

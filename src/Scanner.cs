@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 
 namespace miniPL {
     public class Scanner {
         private readonly string source;
-        private readonly List<Token> tokens = new List<Token>();
         private int start = 0;
         private int current = 0;
         private int line = 1;
@@ -14,109 +12,95 @@ namespace miniPL {
             this.source = source;
         }
 
-        public List<Token> ScanTokens() {
-            // Parse tokens until the end of source
+        public void ScanTokens() {
             while (!IsEOF()) {
                 start = current;
-                ScanToken();
+                Console.WriteLine(ScanToken());
             }
-            // Add EOF token at the end
-            tokens.Add(new Token(TokenType.EOF, "", null, line));
-            return tokens;
+            Console.WriteLine(new Token(TokenType.EOF, "", null, line));
         }
 
-        private void ScanToken() {
+        public Token ScanToken() {
             char c = Advance();
 
             switch (c) {
                 // Ignore whitespace and count newlines
+                // Return the next valid token
                 case ' ':
-                    break;
+                    return ScanToken();
                 case '\r':
-                    break;
+                    return ScanToken();
                 case '\t':
-                    break;
+                    return ScanToken();
                 case '\n':
-                    break;
+                    return ScanToken();
 
                     // Single character tokens
                 case '+':
-                    AddToken(TokenType.ADD);
-                    break;
+                    return CreateToken(TokenType.ADD, null);
                 case '-':
-                    AddToken(TokenType.SUB);
-                    break;
+                    return CreateToken(TokenType.SUB, null);
                 case '*':
-                    AddToken(TokenType.MULT);
-                    break;
+                    return CreateToken(TokenType.MULT, null);
                 case '<':
-                    AddToken(TokenType.LT);
-                    break;
+                    return CreateToken(TokenType.LT, null);
                 case '=':
-                    AddToken(TokenType.EQ);
-                    break;
+                    return CreateToken(TokenType.EQ, null);
                 case '&':
-                    AddToken(TokenType.AND);
-                    break;
+                    return CreateToken(TokenType.AND, null);
                 case '!':
-                    AddToken(TokenType.NOT);
-                    break;
+                    return CreateToken(TokenType.NOT, null);
                 case ';':
-                    AddToken(TokenType.SEMICOLON);
-                    break;
+                    return CreateToken(TokenType.SEMICOLON, null);
                 case '(':
-                    AddToken(TokenType.LEFT_PAREN);
-                    break;
+                    return CreateToken(TokenType.LEFT_PAREN, null);
                 case ')':
-                    AddToken(TokenType.RIGHT_PAREN);
-                    break;
+                    return CreateToken(TokenType.RIGHT_PAREN, null);
 
                     // Multi-character tokens
                 case '.':
-                    if (Match('.')) {
-                        AddToken(TokenType.RANGE);
-                    } else {
-                        Program.Error(line, column, "Unexpected character \"" + c + "\".");
-                    }
-                    break;
+                    if (Match('.')) return CreateToken(TokenType.RANGE, null);
+                    Program.Error(line, column, "Unexpected character \"" + c + "\".");
+                    return CreateToken(TokenType.PARSE_ERROR, null);
                 case ':':
-                    AddToken(Match('=') ? TokenType.ASSIGN : TokenType.COLON);
-                    break;
+                    return CreateToken(
+                        (
+                            Match('=') ? TokenType.ASSIGN : TokenType.COLON
+                        ), null);
 
                     // Division or comment
                 case '/':
                     if (Match('/')) {
                         // It's a single-line comment. Consume it 'till the end of line
+                        // and return next valid token
                         while (Peek() != '\n' && !IsEOF()) Advance();
+                        return ScanToken();
 
                     } else if (Match('*')) {
-                        // It's a multiline comment.
+                        // It's a multiline comment. Consume it and return next valid token.
                         ParseMultilineComment();
+                        return ScanToken();
 
-                    } else {
-                        // It's division
-                        AddToken(TokenType.DIV);
                     }
-                    break;
+                    return CreateToken(TokenType.DIV, null);
 
                     // String literal
                 case '"':
-                    ParseString();
-                    break;
+                    string s = ParseString();
+                    if (s == null) return CreateToken(TokenType.PARSE_ERROR, null);
+                    return CreateToken(TokenType.STRING, s);
 
                     // Number literal
                 case var digit when char.IsDigit(c):
-                    AddToken(TokenType.INTEGER, ParseNumber());
-                break;
+                    return CreateToken(TokenType.INTEGER, ParseNumber());
 
                 // Identifiers and keywords
                 case var letter when char.IsLetter(c):
-                    AddToken(ParseIdentifier());
-                break;
+                    return CreateToken(ParseIdentifier(), null);
 
                 default:
                     Program.Error(line, column, "Unexpected character \"" + c + "\".");
-                    break;
+                    return CreateToken(TokenType.PARSE_ERROR, null);
             }
         }
 
@@ -162,7 +146,7 @@ namespace miniPL {
             return int.Parse(literal);
         }
 
-        private void ParseString() {
+        private string ParseString() {
             // Remember the start of the string. Used for error handling.
             var stringStart = (line, column);
             // Read characters until EOF or closing ".
@@ -181,15 +165,14 @@ namespace miniPL {
                     stringStart.column,
                     "Unterminated string."
                 );
-                return;
+                return null;
             }
 
             // Consume the closing ".
             Advance();
 
             // Trim the surrounding quotes
-            string value = source.Substring(start + 1, current - start - 2);
-            AddToken(TokenType.STRING, value);
+            return source.Substring(start + 1, current - start - 2);
         }
 
         private void ParseMultilineComment() {
@@ -258,13 +241,9 @@ namespace miniPL {
             return current >= source.Length;
         }
 
-        private void AddToken(TokenType type) {
-            AddToken(type, null);
-        }
-
-        private void AddToken(TokenType type, object literal) {
+        private Token CreateToken(TokenType type, object literal) {
             string raw = source.Substring(start, current - start);
-            tokens.Add(new Token(type, raw, literal, line));
+            return new Token(type, raw, literal, line);
         }
     }
 }
