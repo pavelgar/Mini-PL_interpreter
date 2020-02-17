@@ -39,6 +39,6 @@ namespace miniPL {
         ASSIGN,
 
         EOF,
-        PARSE_ERROR
+        SCAN_ERROR
     }
 }

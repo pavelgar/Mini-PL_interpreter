@@ -13,19 +13,23 @@ namespace miniPL {
         }
 
         public void ScanTokens() {
+            Console.WriteLine(source.Length);
             while (!IsEOF()) {
-                start = current;
                 Console.WriteLine(ScanToken());
             }
-            Console.WriteLine(new Token(TokenType.EOF, "", null, line));
         }
 
         public Token ScanToken() {
+            // Check for End of File
+            if (IsEOF()) return new Token(TokenType.EOF, "", null, line);
+            // Set the start of current token to current pointer
+            start = current;
+            // Read the next character
             char c = Advance();
 
             switch (c) {
                 // Ignore whitespace and count newlines
-                // Return the next valid token
+                // Return the next valid token (recursive)
                 case ' ':
                     return ScanToken();
                 case '\r':
@@ -61,12 +65,11 @@ namespace miniPL {
                 case '.':
                     if (Match('.')) return CreateToken(TokenType.RANGE, null);
                     Program.Error(line, column, "Unexpected character \"" + c + "\".");
-                    return CreateToken(TokenType.PARSE_ERROR, null);
+                    return CreateToken(TokenType.SCAN_ERROR, null);
                 case ':':
                     return CreateToken(
-                        (
-                            Match('=') ? TokenType.ASSIGN : TokenType.COLON
-                        ), null);
+                        (Match('=') ? TokenType.ASSIGN : TokenType.COLON), null
+                    );
 
                     // Division or comment
                 case '/':
@@ -87,7 +90,8 @@ namespace miniPL {
                     // String literal
                 case '"':
                     string s = ParseString();
-                    if (s == null) return CreateToken(TokenType.PARSE_ERROR, null);
+                    // Return SCAN_ERROR if string is unterminated
+                    if (s == null) return CreateToken(TokenType.SCAN_ERROR, null);
                     return CreateToken(TokenType.STRING, s);
 
                     // Number literal
@@ -100,7 +104,7 @@ namespace miniPL {
 
                 default:
                     Program.Error(line, column, "Unexpected character \"" + c + "\".");
-                    return CreateToken(TokenType.PARSE_ERROR, null);
+                    return CreateToken(TokenType.SCAN_ERROR, null);
             }
         }
 
