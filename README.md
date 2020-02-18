@@ -61,17 +61,13 @@ This is assignement for University of Helsinki course on Compilers.
         | "assert" "(" <expr> ")"
 
 <expr>  ::= <opnd> <op> <opnd>
-        | [ <unary_op> ] <opnd>
+        | [ "!" ] <opnd>
 
 <opnd>  ::= <int> | <string> | <var_ident> | "(" expr ")"
 
 <op>    ::= "+" | "-" | "*" | "/" | "<" | "=" | "&"
 
-<unary_op> ::= "!"
-
 <type>  ::= "int" | "string" | "bool"
-
-<var_ident> ::= <ident>
 ```
 
 ### Abstract syntax trees
@@ -80,8 +76,9 @@ This is assignement for University of Helsinki course on Compilers.
 
 #### In scanner
 
-1. Reject the invalid character
-1. Report the error and skip over
+Upon noticing an invalid token/character the scanner rejects it
+and returns a `SCAN_ERROR` token instead
+while also reporting the inconsistency as a `Program.Error();`
 
 #### In parser
 
@@ -97,5 +94,9 @@ This is assignement for University of Helsinki course on Compilers.
 | 7.2.  | 5        | Writing documentation, reading C# docs and writing basics.                    |
 | 8.2.  | 4        | Updating documentation, writing the lexer.                                    |
 | 10.2. | 6        | Fixing multiline comment parsing and starting on ASTs.                        |
+| 11.2. | 2        | Some refactoring and updating documentation.                                  |
+| 14.2. | 3        | Big refactor to work with upcoming Parser.                                    |
+| 17.2. | 1        | Reading course material. Writing documentation.                               |
+| 18.2. | 4        | Parser pretty much working.                                                   |
 
-**Total:** 18h
+**Total:** 28h

@@ -1,20 +1,12 @@
 namespace miniPL {
     public interface Expression { }
 
-    public struct Group : Expression {
-        readonly Expression expression;
-
-        public Group(Expression expression) {
-            this.expression = expression;
-        }
-    }
-
     public struct Binary : Expression {
-        readonly Expression left;
+        readonly Operand left;
         readonly Token op;
-        readonly Expression right;
+        readonly Operand right;
 
-        public Binary(Expression left, Token op, Expression right) {
+        public Binary(Operand left, Token op, Operand right) {
             this.left = left;
             this.op = op;
             this.right = right;
@@ -22,12 +14,12 @@ namespace miniPL {
     }
 
     public struct Unary : Expression {
-        readonly Token op;
-        readonly Expression right;
+        readonly Token? not;
+        readonly Operand expr;
 
-        public Unary(Token op, Expression right) {
-            this.op = op;
-            this.right = right;
+        public Unary(Token? not, Operand expr) {
+            this.not = not;
+            this.expr = expr;
         }
     }
 }

@@ -12,13 +12,6 @@ namespace miniPL {
             this.source = source;
         }
 
-        public void ScanTokens() {
-            Console.WriteLine(source.Length);
-            while (!IsEOF()) {
-                Console.WriteLine(ScanToken());
-            }
-        }
-
         public Token ScanToken() {
             // Check for End of File
             if (IsEOF()) return new Token(TokenType.EOF, "", null, line);

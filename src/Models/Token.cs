@@ -1,9 +1,9 @@
 namespace miniPL {
     public struct Token {
-        readonly TokenType type;
-        readonly string rawValue;
-        readonly object literal;
-        readonly int line;
+        public readonly TokenType type;
+        public readonly string rawValue;
+        public readonly object literal;
+        public readonly int line;
         public Token(TokenType type, string rawValue, object literal, int line) {
             this.type = type;
             this.rawValue = rawValue;
@@ -12,7 +12,11 @@ namespace miniPL {
         }
 
         public override string ToString() {
-            return "Token(" + line + ", " + type + ", " + rawValue + ")";
+            return "Token(line: " + line +
+                ", type: " + type +
+                ", raw: " + rawValue +
+                ", literal: " + literal +
+                ")";
         }
     }
 }

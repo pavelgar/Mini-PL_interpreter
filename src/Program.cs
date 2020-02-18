@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -30,7 +31,9 @@ namespace miniPL {
 
         private static void Run(string source) {
             Scanner scanner = new Scanner(source);
-            scanner.ScanTokens();
+            Parser parser = new Parser(scanner);
+            List<Statement> result = parser.Execute();
+            result.ForEach(Console.WriteLine);
         }
 
         public static void Error(int line, int column, string message) {
