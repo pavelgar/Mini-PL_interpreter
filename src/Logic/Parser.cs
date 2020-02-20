@@ -50,7 +50,7 @@ namespace miniPL {
                     return ParseAssert();
 
                 default:
-                    throw new System.Exception("Statement cannot start with " + currentToken);
+                    throw new System.Exception($"Statement cannot start with {currentToken}");
             }
         }
 
@@ -145,7 +145,7 @@ namespace miniPL {
                     return new Expr(expr);
 
                 default:
-                    throw new Exception("Unexpected token: " + currentToken);
+                    throw new Exception($"Unexpected token: {currentToken}");
             }
         }
 
@@ -157,7 +157,7 @@ namespace miniPL {
                     return true;
                 }
             }
-            throw new Exception("Unexpected token" + currentToken);
+            throw new Exception($"Unexpected token: {currentToken}");
         }
 
         private bool Match(TokenType type) {
@@ -166,7 +166,7 @@ namespace miniPL {
                 nextToken = scanner.ScanToken();
                 return true;
             }
-            throw new Exception("Unexpected token: " + currentToken);
+            throw new Exception($"Unexpected token: {currentToken}");
         }
     }
 }

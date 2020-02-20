@@ -12,11 +12,7 @@ namespace miniPL {
         }
 
         public override string ToString() {
-            return "Token(line: " + line +
-                ", type: " + type +
-                ", raw: " + rawValue +
-                ", literal: " + literal +
-                ")";
+            return $"Token(line: {line}, type: {type}, raw: {rawValue}, literal: {literal})";
         }
     }
 }

@@ -57,7 +57,7 @@ namespace miniPL {
                     // Multi-character tokens
                 case '.':
                     if (Match('.')) return CreateToken(TokenType.RANGE, null);
-                    Program.Error(line, column, "Unexpected character \"" + c + "\".");
+                    Program.Error(line, column, $"Unexpected character '{c}'.");
                     return CreateToken(TokenType.SCAN_ERROR, null);
                 case ':':
                     return CreateToken(
@@ -96,7 +96,7 @@ namespace miniPL {
                     return CreateToken(ParseIdentifier(), null);
 
                 default:
-                    Program.Error(line, column, "Unexpected character \"" + c + "\".");
+                    Program.Error(line, column, $"Unexpected character '{c}'.");
                     return CreateToken(TokenType.SCAN_ERROR, null);
             }
         }

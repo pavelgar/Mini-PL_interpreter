@@ -37,7 +37,7 @@ namespace miniPL {
         }
 
         public static void Error(int line, int column, string message) {
-            Console.Error.WriteLine("[" + line + ":" + column + "] Error" + ": " + message);
+            Console.Error.WriteLine($"[{line}:{column}] Error: {message}");
             hadError = true;
         }
 
