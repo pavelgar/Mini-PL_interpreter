@@ -18,17 +18,17 @@ namespace miniPL {
     }
 
     public struct Unary : Expression {
-        readonly Token? not;
+        readonly Token? op;
         readonly Operand expr;
 
-        public Unary(Token? not, Operand expr) {
-            this.not = not;
+        public Unary(Token? op, Operand expr) {
+            this.op = op;
             this.expr = expr;
         }
 
         public override string ToString() {
-            if (not.HasValue) {
-                return $"Unary( {not.Value.type} {expr} )";
+            if (op.HasValue) {
+                return $"Unary( {op.Value.type} {expr} )";
             }
             return $"Unary( {expr} )";
         }
