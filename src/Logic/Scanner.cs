@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 
 namespace miniPL {
     public class Scanner {
@@ -12,12 +12,15 @@ namespace miniPL {
             this.source = source;
         }
 
-        public Token ScanToken() {
-            // Check for End of File
-            if (IsEOF()) return new Token(TokenType.EOF, "", null, line);
-            // Set the start of current token to current pointer
+        public List<Token> ScanTokens() {
+            List<Token> tokens = new List<Token>();
+            while (!IsEOF()) tokens.Add(ScanToken());
+            tokens.Add(new Token(TokenType.EOF, "", null, line));
+            return tokens;
+        }
+
+        private Token ScanToken() {
             start = current;
-            // Read the next character
             char c = Advance();
 
             switch (c) {
@@ -57,7 +60,7 @@ namespace miniPL {
                     // Multi-character tokens
                 case '.':
                     if (Match('.')) return CreateToken(TokenType.RANGE, null);
-                    Program.Error(line, column, $"Unexpected character '{c}'.");
+                    Program.Error(line, $"Unexpected character '{c}'.");
                     return CreateToken(TokenType.SCAN_ERROR, null);
                 case ':':
                     return CreateToken(
@@ -96,7 +99,7 @@ namespace miniPL {
                     return CreateToken(ParseIdentifier(), null);
 
                 default:
-                    Program.Error(line, column, $"Unexpected character '{c}'.");
+                    Program.Error(line, $"Unexpected character '{c}'.");
                     return CreateToken(TokenType.SCAN_ERROR, null);
             }
         }
@@ -129,6 +132,10 @@ namespace miniPL {
                     return TokenType.STR;
                 case "bool":
                     return TokenType.BOOL;
+                case "true":
+                    return TokenType.TRUE;
+                case "false":
+                    return TokenType.FALSE;
                 case "assert":
                     return TokenType.ASSERT;
                 default:
@@ -145,7 +152,7 @@ namespace miniPL {
 
         private string ParseString() {
             // Remember the start of the string. Used for error handling.
-            var stringStart = (line, column);
+            var stringStart = line;
             // Read characters until EOF or closing ".
             while (!IsEOF() && Peek() != '"') {
                 // Skip twice if next character is escaped
@@ -157,11 +164,7 @@ namespace miniPL {
 
             // Catch unterminated string
             if (IsEOF()) {
-                Program.Error(
-                    stringStart.line,
-                    stringStart.column,
-                    "Unterminated string."
-                );
+                Program.Error(stringStart, "Unterminated string.");
                 return null;
             }
 
@@ -174,7 +177,7 @@ namespace miniPL {
 
         private void ParseMultilineComment() {
             // Remember the start of the comment. Used for error handling.
-            var stringStart = (line, column);
+            var commentStart = line;
             // Read characters until EOF or closing */.
             while (!IsEOF() && (Peek() != '*' || PeekNext() != '/')) {
                 // Check if a new multiline comment is starting /*
@@ -189,11 +192,7 @@ namespace miniPL {
 
             // Catch unterminated comment
             if (IsEOF()) {
-                Program.Error(
-                    stringStart.line,
-                    stringStart.column,
-                    "Unterminated multiline comment."
-                );
+                Program.Error(commentStart, "Unterminated multiline comment.");
                 return;
             }
 

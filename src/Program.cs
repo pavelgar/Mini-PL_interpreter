@@ -31,15 +31,27 @@ namespace miniPL {
 
         private static void Run(string source) {
             Scanner scanner = new Scanner(source);
-            Parser parser = new Parser(scanner);
-            List<Statement> result = parser.Execute();
+            List<Token> tokens = scanner.ScanTokens();
+            Parser parser = new Parser(tokens);
+            List<Statement> result = parser.Stmts();
             result.ForEach(Console.WriteLine);
         }
 
-        public static void Error(int line, int column, string message) {
-            Console.Error.WriteLine($"[{line}:{column}] Error: {message}");
-            hadError = true;
+        public static void Error(int line, string message) {
+            Report(line, "", message);
         }
 
+        public static void Error(Token token, String message) {
+            if (token.type == TokenType.EOF) {
+                Report(token.line, "at end", message);
+            } else {
+                Report(token.line, $"at '{token.rawValue}'", message);
+            }
+        }
+
+        private static void Report(int line, string at, string message) {
+            Console.Error.WriteLine($"[{line}] Error: {at}: {message}");
+            hadError = true;
+        }
     }
 }

@@ -11,6 +11,8 @@ namespace miniPL {
         INT,
         STR,
         BOOL,
+        TRUE,
+        FALSE,
         ASSERT,
 
         // Arithmetic
