@@ -1,3 +1,8 @@
+var X : int := 4 + (6 * 2);
+print X;
+
+// =================================
+
 var nTimes : int := 0;
 /* This /* is /*a*/ nested*/comment**/
 print "How many times?\"";
@@ -8,3 +13,16 @@ for x in 0..nTimes-1 do
     print " : Hello, World!\n";
 end for;
 assert (x = nTimes);
+
+// =================================
+
+print "Give a number";
+var n : int;
+read n;
+var v : int := 1;
+var i : int;
+for i in 1..n do
+v := v * i;
+end for;
+print "The result is: ";
+print v;

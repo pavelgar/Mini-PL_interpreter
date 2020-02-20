@@ -76,7 +76,6 @@ namespace miniPL {
         }
 
         private Statement ParseVariableAssign() {
-            Match(TokenType.IDENT);
             Token ident = currentToken;
             Match(TokenType.ASSIGN);
             Expression expr = Expr();
@@ -106,7 +105,8 @@ namespace miniPL {
             Operand left = Opnd();
 
             if (nextToken.type == TokenType.SEMICOLON ||
-                nextToken.type == TokenType.RANGE) {
+                nextToken.type == TokenType.RANGE ||
+                nextToken.type == TokenType.DO) {
                 return new Unary(null, left);
             }
 
@@ -140,6 +140,7 @@ namespace miniPL {
                     return new Identifier(currentToken);
 
                 case TokenType.LEFT_PAREN:
+                    Match(TokenType.LEFT_PAREN);
                     Expression expr = Expr();
                     Match(TokenType.RIGHT_PAREN);
                     return new Expr(expr);
