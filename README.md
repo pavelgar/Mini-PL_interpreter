@@ -98,5 +98,6 @@ while also reporting the inconsistency as a `Program.Error();`
 | 14.2. | 3        | Big refactor to work with upcoming Parser.                                    |
 | 17.2. | 1        | Reading course material. Writing documentation.                               |
 | 18.2. | 4        | Parser pretty much working.                                                   |
+| 20.2. | 2        | Adding string representations to parsed blocks.                               |
 
-**Total:** 28h
+**Total:** 30h

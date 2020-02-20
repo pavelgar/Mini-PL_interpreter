@@ -11,6 +11,10 @@ namespace miniPL {
             this.op = op;
             this.right = right;
         }
+
+        public override string ToString() {
+            return $"Binary( {left} {op.type} {right} )";
+        }
     }
 
     public struct Unary : Expression {
@@ -20,6 +24,13 @@ namespace miniPL {
         public Unary(Token? not, Operand expr) {
             this.not = not;
             this.expr = expr;
+        }
+
+        public override string ToString() {
+            if (not.HasValue) {
+                return $"Unary( {not.Value.type} {expr} )";
+            }
+            return $"Unary( {expr} )";
         }
     }
 }

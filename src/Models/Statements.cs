@@ -13,6 +13,10 @@ namespace miniPL {
             this.type = type;
             this.expression = expression;
         }
+
+        public override string ToString() {
+            return $"VariableCreate( {ident.type} : {type.type} := {expression} )";
+        }
     }
 
     public struct VariableAssign : Statement {
@@ -22,6 +26,10 @@ namespace miniPL {
         public VariableAssign(Token ident, Expression expression) {
             this.ident = ident;
             this.expression = expression;
+        }
+
+        public override string ToString() {
+            return $"VariableAssign( {ident.type} := {expression} )";
         }
     }
 
@@ -43,6 +51,10 @@ namespace miniPL {
             this.end = end;
             this.statements = statements;
         }
+
+        public override string ToString() {
+            return $"ForLoop( {ident.type} in {start} .. {end}:\n    {string.Join("\n    ", statements)}\n)";
+        }
     }
 
     public struct Read : Statement {
@@ -50,6 +62,10 @@ namespace miniPL {
 
         public Read(Token ident) {
             this.ident = ident;
+        }
+
+        public override string ToString() {
+            return $"Read( {ident.type} )";
         }
     }
 
@@ -59,6 +75,10 @@ namespace miniPL {
         public Print(Expression expression) {
             this.expression = expression;
         }
+
+        public override string ToString() {
+            return $"Print( {expression} )";
+        }
     }
 
     public struct Assert : Statement {
@@ -66,6 +86,10 @@ namespace miniPL {
 
         public Assert(Expression expression) {
             this.expression = expression;
+        }
+
+        public override string ToString() {
+            return $"Assert( {expression} )";
         }
     }
 }
