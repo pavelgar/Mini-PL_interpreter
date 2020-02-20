@@ -3,21 +3,18 @@ using System.Collections.Generic;
 
 namespace miniPL {
     public class Parser {
-        private readonly Scanner scanner;
-        private Token currentToken;
-        private Token nextToken;
+        private readonly List<Token> tokens;
+        private int current = 0;
 
-        public Parser(Scanner scanner) {
-            // Set the scanner and read the first token.
-            this.scanner = scanner;
-            nextToken = this.scanner.ScanToken();
+        public Parser(List<Token> tokens) {
+            this.tokens = tokens;
         }
 
-        internal List<Statement> Execute() {
+        internal List<Statement> Stmts() {
             List<Statement> statements = new List<Statement>();
             while (
-                nextToken.type != TokenType.EOF &&
-                nextToken.type != TokenType.END
+                Peek().type != TokenType.EOF &&
+                Peek().type != TokenType.END
             ) {
                 statements.Add(Stmt());
                 Match(TokenType.SEMICOLON);
@@ -26,10 +23,7 @@ namespace miniPL {
         }
 
         private Statement Stmt() {
-            currentToken = nextToken;
-            nextToken = scanner.ScanToken();
-
-            switch (currentToken.type) {
+            switch (tokens[current].type) {
                 case TokenType.VAR:
                     return ParseVariableCreate();
 
@@ -41,7 +35,7 @@ namespace miniPL {
 
                 case TokenType.READ:
                     Match(TokenType.IDENT);
-                    return new Read(currentToken);
+                    return new Read(tokens[current]);
 
                 case TokenType.PRINT:
                     return new Print(Expr());
@@ -50,7 +44,7 @@ namespace miniPL {
                     return ParseAssert();
 
                 default:
-                    throw new System.Exception($"Statement cannot start with {currentToken}");
+                    throw new System.Exception($"Statement cannot start with {tokens[current]}");
             }
         }
 
@@ -63,20 +57,20 @@ namespace miniPL {
 
         private Statement ParseForLoop() {
             Match(TokenType.IDENT);
-            Token ident = currentToken;
+            Token ident = tokens[current];
             Match(TokenType.IN);
             Expression start = Expr();
             Match(TokenType.RANGE);
             Expression end = Expr();
             Match(TokenType.DO);
-            List<Statement> stmts = Execute();
+            List<Statement> stmts = Stmts();
             Match(TokenType.END);
             Match(TokenType.FOR);
             return new ForLoop(ident, start, end, stmts);
         }
 
         private Statement ParseVariableAssign() {
-            Token ident = currentToken;
+            Token ident = tokens[current];
             Match(TokenType.ASSIGN);
             Expression expr = Expr();
             return new VariableAssign(ident, expr);
@@ -84,13 +78,12 @@ namespace miniPL {
 
         private Statement ParseVariableCreate() {
             Match(TokenType.IDENT);
-            Token ident = currentToken;
+            Token ident = tokens[current];
             Match(TokenType.COLON);
-            TokenType[] acceptedTypes = { TokenType.INT, TokenType.STR, TokenType.BOOL };
-            Match(acceptedTypes);
-            Token type = currentToken;
+            Match(new TokenType[] { TokenType.INT, TokenType.STR, TokenType.BOOL });
+            Token type = tokens[current];
             Expression expr = null;
-            if (nextToken.type != TokenType.SEMICOLON) {
+            if (Peek().type != TokenType.SEMICOLON) {
                 Match(TokenType.ASSIGN);
                 expr = Expr();
             }
@@ -98,76 +91,122 @@ namespace miniPL {
         }
 
         private Expression Expr() {
-            if (nextToken.type == TokenType.NOT) {
-                Match(TokenType.NOT);
-                return new Unary(currentToken, Opnd());
-            }
-            Operand left = Opnd();
-
-            if (nextToken.type == TokenType.SEMICOLON ||
-                nextToken.type == TokenType.RANGE ||
-                nextToken.type == TokenType.DO) {
-                return new Unary(null, left);
-            }
-
-            TokenType[] acceptedOperators = {
-                TokenType.ADD,
-                TokenType.SUB,
-                TokenType.MULT,
-                TokenType.DIV,
-                TokenType.LT,
-                TokenType.EQ,
-                TokenType.AND
-            };
-            Match(acceptedOperators);
-            Token op = currentToken;
-            Operand right = Opnd();
-            return new Binary(left, op, right);
+            return Equality();
         }
 
-        private Operand Opnd() {
-            switch (nextToken.type) {
-                case TokenType.INTEGER:
-                    Match(TokenType.INTEGER);
-                    return new Integer(currentToken);
+        private Expression Equality() {
+            Expression expr = Comparison();
 
-                case TokenType.STRING:
-                    Match(TokenType.STRING);
-                    return new String(currentToken);
-
-                case TokenType.IDENT:
-                    Match(TokenType.IDENT);
-                    return new Identifier(currentToken);
-
-                case TokenType.LEFT_PAREN:
-                    Match(TokenType.LEFT_PAREN);
-                    Expression expr = Expr();
-                    Match(TokenType.RIGHT_PAREN);
-                    return new Expr(expr);
-
-                default:
-                    throw new Exception($"Unexpected token: {currentToken}");
+            while (Match(TokenType.EQ, TokenType.AND)) {
+                Token op = Previous();
+                Expression right = Comparison();
+                expr = new Binary(expr, op, right);
             }
+            return expr;
         }
 
-        private bool Match(TokenType[] types) {
+        private Expression Comparison() {
+            Expression expr = Addition();
+
+            while (Match(TokenType.LT)) {
+                Token op = Previous();
+                Expression right = Addition();
+                expr = new Binary(expr, op, right);
+            }
+            return expr;
+        }
+
+        private Expression Addition() {
+            Expression expr = Multiplication();
+
+            while (Match(TokenType.ADD, TokenType.SUB)) {
+                Token op = Previous();
+                Expression right = Multiplication();
+                expr = new Binary(expr, op, right);
+            }
+            return expr;
+        }
+
+        private Expression Multiplication() {
+            Expression expr = Unary();
+
+            while (Match(TokenType.MULT, TokenType.DIV)) {
+                Token op = Previous();
+                Expression right = Unary();
+                expr = new Binary(expr, op, right);
+            }
+            return expr;
+        }
+
+        private Expression Unary() {
+            if (Match(TokenType.NOT)) {
+                Token op = Previous();
+                Expression right = Unary();
+                return new Unary(op, right);
+            }
+
+            return Primary();
+        }
+
+        private Expression Primary() {
+            if (Match(TokenType.TRUE)) return new Literal(true);
+            if (Match(TokenType.FALSE)) return new Literal(false);
+
+            if (Match(TokenType.INTEGER, TokenType.STRING)) {
+                return new Literal(Previous().literal);
+            }
+
+            // TODO: WHAT TO DO WITH IDENTIFIERS???
+
+            if (Match(TokenType.LEFT_PAREN)) {
+                Expression expr = Expr();
+                Consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
+                return new Grouping(expr);
+            }
+
+            throw new Exception("Invalid literal");
+        }
+
+        private Token Consume(TokenType type, string message) {
+            if (Check(type)) return Advance();
+            throw Error(Peek(), message);
+        }
+
+        private Exception Error(Token token, string message) {
+            Program.Error(token, message);
+            return new Exception();
+        }
+
+        private bool Match(params TokenType[] types) {
             foreach (TokenType type in types) {
-                if (nextToken.type == type) {
-                    currentToken = nextToken;
-                    nextToken = scanner.ScanToken();
+                if (Check(type)) {
+                    Advance();
                     return true;
                 }
             }
-            throw new Exception($"Unexpected token: {currentToken}");
+            return false;
         }
 
-        private bool Match(TokenType type) {
-            if (nextToken.type == type) {
-                currentToken = nextToken;
-                nextToken = scanner.ScanToken();
-                return true;
-            }
-            throw new Exception($"Unexpected token: {currentToken}");
+        private Token Advance() {
+            if (!IsEnd()) current++;
+            return Previous();
+        }
+
+        private bool Check(TokenType type) {
+            if (IsEnd()) return false;
+            return Peek().type == type;
+        }
+
+        private bool IsEnd() {
+            return Peek().type == TokenType.EOF;
+        }
+
+        private Token Peek() {
+            return tokens[current];
+        }
+
+        private Token Previous() {
+            return tokens[current - 1];
         }
     }
 }

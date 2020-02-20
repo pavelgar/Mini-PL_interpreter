@@ -20,6 +20,8 @@ This is assignement for University of Helsinki course on Compilers.
 |      INT       | `int`                    | Integer type                            |
 |      STR       | `string`                 | String type                             |
 |      BOOL      | `bool`                   | Boolean type                            |
+|      TRUE      | `true`                   | Boolean value true                      |
+|     FALSE      | `false`                  | Boolean value false                     |
 |     ASSERT     | `assert`                 | Program state verification              |
 | **Arithmetic** |
 |      ADD       | `+`                      | Arithmetic add and string concatenation |
@@ -47,27 +49,34 @@ This is assignement for University of Helsinki course on Compilers.
 ### Modified context-free grammar
 
 ```
-<prog>  ::= <stmts>
+<program>   => <stmts>
 
-<stmts> ::= ( <stmt> ";" )+
+<stmts>     => ( <stmt> ";" )+
 
-<stmt>  ::= "var" <var_ident> ":" <type> [ ":=" <expr> ]
-        | <var_ident> ":=" <expr>
-        | "for" <var_ident> "in" <expr> ".." <expr> "do"
-              <stmts>
-          "end" "for"
-        | "read" <var_ident>
-        | "print" <expr>
-        | "assert" "(" <expr> ")"
+<stmt>      => "var" IDENT ":" <type> [ ":=" <expr> ]
+            | IDENT ":=" <expr>
+            | "for" IDENT "in" <expr> ".." <expr> "do"
+                  <stmts>
+              "end" "for"
+            | "read" IDENT
+            | "print" <expr>
+            | "assert" "(" <expr> ")"
 
-<expr>  ::= <opnd> <op> <opnd>
-        | [ "!" ] <opnd>
+<type>      => "int" | "string" | "bool"
 
-<opnd>  ::= <int> | <string> | <var_ident> | "(" expr ")"
+<expr>      => <equality>
 
-<op>    ::= "+" | "-" | "*" | "/" | "<" | "=" | "&"
+<equality>  => <comp> (("=" | "&") <comp>)*
 
-<type>  ::= "int" | "string" | "bool"
+<comp>      => <addition> (("<") <addition>)*
+
+<addition>  => <mult> (("+" | "-") <mult>)*
+
+<mult>      => <unary> (("/" | "*") <unary>)*
+
+<unary>     => "!" <unary> | <primary>
+
+<primary>   => INT | STRING | IDENT | "true" | "false" | "(" <expr> ")"
 ```
 
 ### Abstract syntax trees
@@ -98,6 +107,6 @@ while also reporting the inconsistency as a `Program.Error();`
 | 14.2. | 3        | Big refactor to work with upcoming Parser.                                    |
 | 17.2. | 1        | Reading course material. Writing documentation.                               |
 | 18.2. | 4        | Parser pretty much working.                                                   |
-| 20.2. | 2        | Adding string representations to parsed blocks.                               |
+| 20.2. | 5        | Updating grammar and code according to it.                                    |
 
-**Total:** 30h
+**Total:** 33h
