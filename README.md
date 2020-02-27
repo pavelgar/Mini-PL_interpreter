@@ -74,7 +74,7 @@ This is assignement for University of Helsinki course on Compilers.
 
 <mult>      => <unary> (("/" | "*") <unary>)*
 
-<unary>     => "!" <unary> | <primary>
+<unary>     => "!" (<unary> | <primary>)
 
 <primary>   => INT | STRING | IDENT | "true" | "false" | "(" <expr> ")"
 ```
@@ -85,11 +85,15 @@ This is assignement for University of Helsinki course on Compilers.
 
 #### In scanner
 
-Upon noticing an invalid token/character the scanner rejects it
-and returns a `SCAN_ERROR` token instead
-while also reporting the inconsistency as a `Program.Error();`
+Upon noticing an invalid/unexpected character the scanner rejects that character
+and returns a `SCAN_ERROR` token instead.
+The scanner also reports the inconsistency using `Program.Error();` with a user-friendly message.
+It continues to parse the characters after reporting the error.
 
 #### In parser
+
+Parser defines a `ParseError` which is thrown if the next token is unexpected or if a statement boundary is missing/unexpected.
+This stops the execution of the program.
 
 #### In semantic analyzer
 
@@ -108,5 +112,7 @@ while also reporting the inconsistency as a `Program.Error();`
 | 17.2. | 1        | Reading course material. Writing documentation.                               |
 | 18.2. | 4        | Parser pretty much working.                                                   |
 | 20.2. | 5        | Updating grammar and code according to it.                                    |
+| 21.2. | 4        | Updating parser to work with statements.                                      |
+| 27.2. | 1        | Implementing tree parsing for the interpreter.                                |
 
-**Total:** 33h
+**Total:** 37h
