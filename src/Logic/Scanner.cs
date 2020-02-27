@@ -15,12 +15,14 @@ namespace miniPL {
         public List<Token> ScanTokens() {
             List<Token> tokens = new List<Token>();
             while (!IsEOF()) tokens.Add(ScanToken());
-            tokens.Add(new Token(TokenType.EOF, "", null, line));
             return tokens;
         }
 
         private Token ScanToken() {
             start = current;
+
+            if (IsEOF()) return new Token(TokenType.EOF, "", null, line);
+
             char c = Advance();
 
             switch (c) {
@@ -87,7 +89,11 @@ namespace miniPL {
                 case '"':
                     string s = ParseString();
                     // Return SCAN_ERROR if string is unterminated
-                    if (s == null) return CreateToken(TokenType.SCAN_ERROR, null);
+                    if (s == null) {
+                        Program.Error(line, $"Unterminated string.");
+                        return CreateToken(TokenType.SCAN_ERROR, null);
+                    }
+
                     return CreateToken(TokenType.STRING, s);
 
                     // Number literal

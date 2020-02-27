@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 
 namespace miniPL {
+
     public class Parser {
+        private class ParseError : SystemException { }
         private readonly List<Token> tokens;
         private int current = 0;
 
@@ -46,6 +48,33 @@ namespace miniPL {
                 default:
                     throw new System.Exception($"Statement cannot start with {tokens[current]}");
             }
+        }
+
+        public Expression Parse() {
+            try {
+                return Expr();
+            } catch (ParseError error) {
+                return null;
+            }
+        }
+
+        private void Sync() {
+            Advance();
+
+            while (!IsEnd()) {
+                if (Previous().type == TokenType.SEMICOLON) return;
+
+                switch (Peek().type) {
+                    case TokenType.VAR:
+                    case TokenType.IDENT:
+                    case TokenType.FOR:
+                    case TokenType.READ:
+                    case TokenType.PRINT:
+                    case TokenType.ASSERT:
+                        return;
+                }
+            }
+            Advance();
         }
 
         private Statement ParseAssert() {
@@ -160,11 +189,11 @@ namespace miniPL {
 
             if (Match(TokenType.LEFT_PAREN)) {
                 Expression expr = Expr();
-                Consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
+                Consume(TokenType.RIGHT_PAREN, "Expected ')' after expression.");
                 return new Grouping(expr);
             }
 
-            throw new Exception("Invalid literal");
+            throw Error(Peek(), "Expected expression.");
         }
 
         private Token Consume(TokenType type, string message) {
@@ -172,9 +201,9 @@ namespace miniPL {
             throw Error(Peek(), message);
         }
 
-        private Exception Error(Token token, string message) {
+        private ParseError Error(Token token, string message) {
             Program.Error(token, message);
-            return new Exception();
+            return new ParseError();
         }
 
         private bool Match(params TokenType[] types) {
