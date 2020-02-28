@@ -6,6 +6,9 @@ using System.Text;
 namespace miniPL {
     class Program {
         static bool hadError = false;
+
+        // Define the interpreter here to persist the state. Matters only in prompt mode.
+        static readonly Interpreter interpreter = new Interpreter();
         static void Main(string[] args) {
             if (args.Length > 1) {
                 Console.WriteLine("ERROR: Too many arguments");
@@ -20,6 +23,7 @@ namespace miniPL {
         private static void RunFile(string path) {
             byte[] bytes = File.ReadAllBytes(path);
             Run(Encoding.UTF8.GetString(bytes));
+            if (hadError) Environment.Exit(65);
         }
 
         private static void RunPrompt() {
@@ -36,11 +40,11 @@ namespace miniPL {
                 Console.WriteLine(token);
             }
             Parser parser = new Parser(tokens);
-            Expression expr = parser.Parse();
+            Expression expression = parser.Parse();
 
             if (hadError) return;
 
-            Console.WriteLine(expr);
+            interpreter.Interpret(expression);
         }
 
         public static void Error(int line, string message) {
@@ -53,6 +57,11 @@ namespace miniPL {
             } else {
                 Report(token.line, $"at '{token.rawValue}'", message);
             }
+        }
+
+        public static void RuntimeError(RuntimeError error) {
+            Token token = error.token;
+            Report(token.line, $"at '{token.rawValue}'", error.Message);
         }
 
         private static void Report(int line, string at, string message) {

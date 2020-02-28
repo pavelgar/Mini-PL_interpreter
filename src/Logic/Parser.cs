@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 
 namespace miniPL {
-
     public class Parser {
-        private class ParseError : SystemException { }
         private readonly List<Token> tokens;
         private int current = 0;
 
@@ -46,7 +43,10 @@ namespace miniPL {
                     return ParseAssert();
 
                 default:
-                    throw new System.Exception($"Statement cannot start with {tokens[current]}");
+                    throw Error(
+                        tokens[current],
+                        $"Statement cannot start with {tokens[current]}"
+                    );
             }
         }
 
