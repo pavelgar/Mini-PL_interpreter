@@ -1,16 +1,6 @@
 namespace miniPL {
     public interface Expression {
-        public abstract T accept<T>(Visitor<T> visitor);
-    }
-    public interface Visitor<T> {
-
-        T VisitBinaryExpression(Binary expression);
-
-        T VisitUnaryExpression(Unary expression);
-
-        T VisitGroupingExpression(Grouping expression);
-
-        T VisitLiteralExpression(Literal expression);
+        public T Accept<T>(Visitor<T> visitor);
     }
 
     public struct Binary : Expression {
@@ -24,7 +14,7 @@ namespace miniPL {
             this.right = right;
         }
 
-        public T accept<T>(Visitor<T> visitor) {
+        public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitBinaryExpression(this);
         }
 
@@ -42,7 +32,7 @@ namespace miniPL {
             this.expr = expr;
         }
 
-        public T accept<T>(Visitor<T> visitor) {
+        public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitUnaryExpression(this);
         }
 
@@ -57,7 +47,7 @@ namespace miniPL {
             this.expr = expr;
         }
 
-        public T accept<T>(Visitor<T> visitor) {
+        public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitGroupingExpression(this);
         }
 
@@ -72,7 +62,7 @@ namespace miniPL {
             this.value = value;
         }
 
-        public T accept<T>(Visitor<T> visitor) {
+        public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitLiteralExpression(this);
         }
 

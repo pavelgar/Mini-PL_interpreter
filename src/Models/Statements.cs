@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 
 namespace miniPL {
-    public interface Statement { }
+    public interface Statement {
+        public T Accept<T>(Visitor<T> visitor);
+    }
 
     public struct VariableCreate : Statement {
         readonly Token ident;
@@ -12,6 +14,10 @@ namespace miniPL {
             this.ident = ident;
             this.type = type;
             this.expression = expression;
+        }
+
+        public T Accept<T>(Visitor<T> visitor) {
+            return visitor.VisitVariableCreateStatement(this);
         }
 
         public override string ToString() {
@@ -26,6 +32,10 @@ namespace miniPL {
         public VariableAssign(Token ident, Expression expression) {
             this.ident = ident;
             this.expression = expression;
+        }
+
+        public T Accept<T>(Visitor<T> visitor) {
+            return visitor.VisitVariableAssignStatement(this);
         }
 
         public override string ToString() {
@@ -52,6 +62,10 @@ namespace miniPL {
             this.statements = statements;
         }
 
+        public T Accept<T>(Visitor<T> visitor) {
+            return visitor.VisitForstatement(this);
+        }
+
         public override string ToString() {
             return $"ForLoop( {ident.type} in {start} .. {end}:\n    {string.Join("\n    ", statements)}\n)";
         }
@@ -62,6 +76,10 @@ namespace miniPL {
 
         public Read(Token ident) {
             this.ident = ident;
+        }
+
+        public T Accept<T>(Visitor<T> visitor) {
+            return visitor.VisitReadStatement(this);
         }
 
         public override string ToString() {
@@ -76,6 +94,10 @@ namespace miniPL {
             this.expression = expression;
         }
 
+        public T Accept<T>(Visitor<T> visitor) {
+            return visitor.VisitPrintStatement(this);
+        }
+
         public override string ToString() {
             return $"Print( {expression} )";
         }
@@ -86,6 +108,10 @@ namespace miniPL {
 
         public Assert(Expression expression) {
             this.expression = expression;
+        }
+
+        public T Accept<T>(Visitor<T> visitor) {
+            return visitor.VisitAssertStatement(this);
         }
 
         public override string ToString() {

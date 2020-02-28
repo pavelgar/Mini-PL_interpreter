@@ -18,8 +18,32 @@ namespace miniPL {
             return Parenthesize(expression.op.rawValue, expression.expr);
         }
 
+        public string VisitPrintStatement(Print print) {
+            throw new System.NotImplementedException();
+        }
+
+        public string VisitAssertStatement(Assert assert) {
+            throw new System.NotImplementedException();
+        }
+
+        public string VisitReadStatement(Read read) {
+            throw new System.NotImplementedException();
+        }
+
+        public string VisitVariableCreateStatement(VariableCreate variableCreate) {
+            throw new System.NotImplementedException();
+        }
+
+        public string VisitVariableAssignStatement(VariableAssign variableAssign) {
+            throw new System.NotImplementedException();
+        }
+
+        public string VisitForstatement(ForLoop forLoop) {
+            throw new System.NotImplementedException();
+        }
+
         string Print(Expression expression) {
-            return expression.accept(this);
+            return expression.Accept(this);
         }
 
         private string Parenthesize(string name, params Expression[] expressions) {
@@ -27,7 +51,7 @@ namespace miniPL {
 
             foreach (Expression expression in expressions) {
                 builder.Append(" ");
-                builder.Append(expression.accept(this));
+                builder.Append(expression.Accept(this));
             }
             builder.Append(")");
 
