@@ -36,15 +36,12 @@ namespace miniPL {
         private static void Run(string source) {
             Scanner scanner = new Scanner(source);
             List<Token> tokens = scanner.ScanTokens();
-            foreach (Token token in tokens) {
-                Console.WriteLine(token);
-            }
             Parser parser = new Parser(tokens);
-            Expression expression = parser.Parse();
+            List<Statement> statements = parser.Parse();
 
             if (hadError) return;
 
-            interpreter.Interpret(expression);
+            interpreter.Interpret(statements);
         }
 
         public static void Error(int line, string message) {

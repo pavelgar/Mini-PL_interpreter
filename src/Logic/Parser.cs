@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace miniPL {
@@ -9,53 +10,80 @@ namespace miniPL {
             this.tokens = tokens;
         }
 
-        internal List<Statement> Stmts() {
+        public List<Statement> Parse() {
             List<Statement> statements = new List<Statement>();
-            while (
-                Peek().type != TokenType.EOF &&
-                Peek().type != TokenType.END
-            ) {
+
+            while (!IsEnd()) {
                 statements.Add(Stmt());
-                Match(TokenType.SEMICOLON);
             }
             return statements;
         }
 
         private Statement Stmt() {
-            switch (tokens[current].type) {
-                case TokenType.VAR:
-                    return ParseVariableCreate();
-
-                case TokenType.IDENT:
-                    return ParseVariableAssign();
-
-                case TokenType.FOR:
-                    return ParseForLoop();
-
-                case TokenType.READ:
-                    Match(TokenType.IDENT);
-                    return new Read(tokens[current]);
-
-                case TokenType.PRINT:
-                    return new Print(Expr());
-
-                case TokenType.ASSERT:
-                    return ParseAssert();
-
-                default:
-                    throw Error(
-                        tokens[current],
-                        $"Statement cannot start with {tokens[current]}"
-                    );
-            }
-        }
-
-        public Expression Parse() {
             try {
-                return Expr();
-            } catch (ParseError error) {
+                if (Match(TokenType.VAR)) return VariableStatement();
+                if (Match(TokenType.READ)) return ReadStatement();
+                if (Match(TokenType.PRINT)) return PrintStatement();
+                if (Match(TokenType.ASSERT)) return AssertStatement();
+
+                return ExpressionStatement();
+
+            } catch (ParseError) {
+                Sync();
                 return null;
             }
+
+            // switch (tokens[current].type) {
+            //     case TokenType.VAR:
+            //         return ParseVariableCreate();
+
+            //     case TokenType.IDENT:
+            //         return ParseVariableAssign();
+
+            //     case TokenType.FOR:
+            //         return ParseForLoop();
+
+            //     case TokenType.READ:
+            //         Match(TokenType.IDENT);
+            //         return new Read(tokens[current]);
+        }
+
+        private Statement VariableStatement() {
+            Token name = Consume(TokenType.IDENT, "Expected variable name.");
+            Consume(TokenType.COLON, "Expected ':' after variable name.");
+            // Just check for the type declarations for now...
+            // TODO: Actually use the type declarations in variable creation
+            Match(TokenType.STR, TokenType.BOOL, TokenType.INT);
+
+            Expression expression = null;
+            if (Match(TokenType.ASSIGN)) {
+                expression = Expr();
+            }
+
+            Consume(TokenType.SEMICOLON, "Expected ';' after variable declaration.");
+            return new Var(name, expression);
+        }
+
+        private Statement ReadStatement() {
+            throw new NotImplementedException();
+        }
+
+        private Statement PrintStatement() {
+            Expression expression = Expr();
+            Consume(TokenType.SEMICOLON, "Expected ';' after expression.");
+            return new Print(expression);
+        }
+
+        private Statement AssertStatement() {
+            Expression expression = Expr();
+            Consume(TokenType.SEMICOLON, "Expected ';' after expression.");
+            return new Print(expression);
+        }
+
+        private Statement ExpressionStatement() {
+            Expression expression = Expr();
+            Consume(TokenType.SEMICOLON, "Expected ';' after expression.");
+            return new ExpressionStmt(expression);
         }
 
         private void Sync() {
@@ -75,48 +103,6 @@ namespace miniPL {
                 }
             }
             Advance();
-        }
-
-        private Statement ParseAssert() {
-            Match(TokenType.LEFT_PAREN);
-            Expression expr = Expr();
-            Match(TokenType.RIGHT_PAREN);
-            return new Assert(expr);
-        }
-
-        private Statement ParseForLoop() {
-            Match(TokenType.IDENT);
-            Token ident = tokens[current];
-            Match(TokenType.IN);
-            Expression start = Expr();
-            Match(TokenType.RANGE);
-            Expression end = Expr();
-            Match(TokenType.DO);
-            List<Statement> stmts = Stmts();
-            Match(TokenType.END);
-            Match(TokenType.FOR);
-            return new ForLoop(ident, start, end, stmts);
-        }
-
-        private Statement ParseVariableAssign() {
-            Token ident = tokens[current];
-            Match(TokenType.ASSIGN);
-            Expression expr = Expr();
-            return new VariableAssign(ident, expr);
-        }
-
-        private Statement ParseVariableCreate() {
-            Match(TokenType.IDENT);
-            Token ident = tokens[current];
-            Match(TokenType.COLON);
-            Match(new TokenType[] { TokenType.INT, TokenType.STR, TokenType.BOOL });
-            Token type = tokens[current];
-            Expression expr = null;
-            if (Peek().type != TokenType.SEMICOLON) {
-                Match(TokenType.ASSIGN);
-                expr = Expr();
-            }
-            return new VariableCreate(ident, type, expr);
         }
 
         private Expression Expr() {
@@ -181,11 +167,11 @@ namespace miniPL {
             if (Match(TokenType.TRUE)) return new Literal(true);
             if (Match(TokenType.FALSE)) return new Literal(false);
 
-            if (Match(TokenType.INTEGER, TokenType.STRING)) {
+            if (Match(TokenType.INTEGER, TokenType.STRING))
                 return new Literal(Previous().literal);
-            }
 
-            // TODO: WHAT TO DO WITH IDENTIFIERS???
+            if (Match(TokenType.IDENT))
+                return new Variable(Previous());
 
             if (Match(TokenType.LEFT_PAREN)) {
                 Expression expr = Expr();
