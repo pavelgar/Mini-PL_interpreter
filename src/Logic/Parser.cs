@@ -13,9 +13,9 @@ namespace miniPL {
         public List<Statement> Parse() {
             List<Statement> statements = new List<Statement>();
 
-            while (!IsEnd()) {
+            while (!IsEnd())
                 statements.Add(Stmt());
-            }
+
             return statements;
         }
 
@@ -32,20 +32,6 @@ namespace miniPL {
                 Sync();
                 return null;
             }
-
-            // switch (tokens[current].type) {
-            //     case TokenType.VAR:
-            //         return ParseVariableCreate();
-
-            //     case TokenType.IDENT:
-            //         return ParseVariableAssign();
-
-            //     case TokenType.FOR:
-            //         return ParseForLoop();
-
-            //     case TokenType.READ:
-            //         Match(TokenType.IDENT);
-            //         return new Read(tokens[current]);
         }
 
         private Statement VariableStatement() {
@@ -72,6 +58,7 @@ namespace miniPL {
             Expression expression = Expr();
             Consume(TokenType.SEMICOLON, "Expected ';' after expression.");
             return new Print(expression);
+
         }
 
         private Statement AssertStatement() {

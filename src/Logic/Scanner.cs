@@ -149,11 +149,11 @@ namespace miniPL {
             }
         }
 
-        private int ParseNumber() {
+        private double ParseNumber() {
             // Read while there are digits
             while (char.IsDigit(Peek())) Advance();
             string literal = source.Substring(start, current - start);
-            return int.Parse(literal);
+            return double.Parse(literal);
         }
 
         private string ParseString() {

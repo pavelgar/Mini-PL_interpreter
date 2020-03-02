@@ -9,21 +9,23 @@ namespace miniPL {
 
         // Define the interpreter here to persist the state. Matters only in prompt mode.
         static readonly Interpreter interpreter = new Interpreter();
-        static void Main(string[] args) {
+        static int Main(string[] args) {
             if (args.Length > 1) {
                 Console.WriteLine("ERROR: Too many arguments");
-                Environment.Exit(64);
+                return 64;
             } else if (args.Length == 1) {
                 RunFile(args[0]);
+                if (hadError) return 65;
+                return 1;
             } else {
                 RunPrompt();
+                return 1;
             }
         }
 
         private static void RunFile(string path) {
             byte[] bytes = File.ReadAllBytes(path);
             Run(Encoding.UTF8.GetString(bytes));
-            if (hadError) Environment.Exit(65);
         }
 
         private static void RunPrompt() {
