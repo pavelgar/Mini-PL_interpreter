@@ -4,11 +4,11 @@ namespace miniPL {
     public class Environment {
         private readonly Dictionary<string, object> values = new Dictionary<string, object>();
 
-        void Define(string name, object value) {
+        public void Define(string name, object value) {
             values[name] = value;
         }
 
-        object Get(Token token) {
+        public object Get(Token token) {
             if (values.ContainsKey(token.rawValue))
                 return values[token.rawValue];
 

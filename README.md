@@ -115,5 +115,6 @@ This stops the execution of the program.
 | 21.2. | 4        | Updating parser to work with statements.                                      |
 | 27.2. | 1        | Implementing tree parsing for the interpreter.                                |
 | 28.2. | 4        | Refactoring and reimplementing statements. Begin working on the environment.  |
+| 2.3.  | 2        | Working on the interpreter. Fixing bugs and done some cleanup.                |
 
-**Total:** 42h
+**Total:** 44h

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace miniPL {
     public class Interpreter : Visitor<object> {
+        Environment environment = new Environment();
+
         public void Interpret(List<Statement> statements) {
             try {
                 foreach (Statement statement in statements) {
@@ -15,6 +17,10 @@ namespace miniPL {
 
         private void Execute(Statement statement) {
             statement.Accept(this);
+        }
+
+        private object Evaluate(Expression expression) {
+            return expression.Accept(this);
         }
 
         private string Stringify(object obj) {
@@ -69,7 +75,7 @@ namespace miniPL {
 
         public object VisitGroupingExpression(Grouping expression) {
             // Evaluate the expression before returning it.
-            return Evaluate(expression);
+            return Evaluate(expression.expr);
         }
 
         public object VisitLiteralExpression(Literal expression) {
@@ -87,7 +93,7 @@ namespace miniPL {
         }
 
         public object VisitVariableExpression(Variable variable) {
-            throw new NotImplementedException();
+            return environment.Get(variable.token);
         }
 
         public object VisitPrintStatement(Print print) {
@@ -105,7 +111,9 @@ namespace miniPL {
         }
 
         public object VisitVariableStatement(Var var) {
-            throw new NotImplementedException();
+            object value = var.expression == null ? null : Evaluate(var.expression);
+            environment.Define(var.ident.rawValue, value);
+            return null;
         }
 
         public object VisitForStatement(ForLoop forLoop) {
@@ -114,10 +122,6 @@ namespace miniPL {
 
         public object VisitExpressionStatement(ExpressionStmt expressionStmt) {
             throw new NotImplementedException();
-        }
-
-        private object Evaluate(Expression expression) {
-            return expression.Accept(this);
         }
 
         private bool ConvertToBoolean(object obj) {
