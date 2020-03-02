@@ -51,7 +51,7 @@ This is assignement for University of Helsinki course on Compilers.
 ```
 <program>   => <stmts>
 
-<stmts>     => ( <stmt> ";" )+
+<stmts>     => ( <stmt> ";" )*
 
 <stmt>      => "var" IDENT ":" <type> [ ":=" <expr> ]
             | IDENT ":=" <expr>
@@ -114,5 +114,6 @@ This stops the execution of the program.
 | 20.2. | 5        | Updating grammar and code according to it.                                    |
 | 21.2. | 4        | Updating parser to work with statements.                                      |
 | 27.2. | 1        | Implementing tree parsing for the interpreter.                                |
+| 28.2. | 4        | Refactoring and reimplementing statements. Begin working on the environment.  |
 
-**Total:** 37h
+**Total:** 42h
