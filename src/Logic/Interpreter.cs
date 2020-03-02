@@ -1,14 +1,20 @@
 using System;
+using System.Collections.Generic;
 
 namespace miniPL {
     public class Interpreter : Visitor<object> {
-        public void Interpret(Expression expression) {
+        public void Interpret(List<Statement> statements) {
             try {
-                object value = Evaluate(expression);
-                Console.WriteLine(Stringify(value));
+                foreach (Statement statement in statements) {
+                    Execute(statement);
+                }
             } catch (RuntimeError error) {
                 Program.RuntimeError(error);
             }
+        }
+
+        private void Execute(Statement statement) {
+            statement.Accept(this);
         }
 
         private string Stringify(object obj) {
@@ -80,8 +86,14 @@ namespace miniPL {
             return null;
         }
 
-        public object VisitPrintStatement(Print print) {
+        public object VisitVariableExpression(Variable variable) {
             throw new NotImplementedException();
+        }
+
+        public object VisitPrintStatement(Print print) {
+            object value = Evaluate(print.expression);
+            Console.WriteLine(Stringify(value));
+            return null;
         }
 
         public object VisitAssertStatement(Assert assert) {
@@ -92,15 +104,15 @@ namespace miniPL {
             throw new NotImplementedException();
         }
 
-        public object VisitVariableCreateStatement(VariableCreate variableCreate) {
+        public object VisitVariableStatement(Var var) {
             throw new NotImplementedException();
         }
 
-        public object VisitVariableAssignStatement(VariableAssign variableAssign) {
+        public object VisitForStatement(ForLoop forLoop) {
             throw new NotImplementedException();
         }
 
-        public object VisitForstatement(ForLoop forLoop) {
+        public object VisitExpressionStatement(ExpressionStmt expressionStmt) {
             throw new NotImplementedException();
         }
 

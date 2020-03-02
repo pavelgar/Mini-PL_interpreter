@@ -5,50 +5,30 @@ namespace miniPL {
         public T Accept<T>(Visitor<T> visitor);
     }
 
-    public struct VariableCreate : Statement {
-        readonly Token ident;
-        readonly Token type;
-        readonly Expression expression;
+    public struct Var : Statement {
+        public readonly Token ident;
+        public readonly Expression expression;
 
-        public VariableCreate(Token ident, Token type, Expression expression) {
-            this.ident = ident;
-            this.type = type;
-            this.expression = expression;
-        }
-
-        public T Accept<T>(Visitor<T> visitor) {
-            return visitor.VisitVariableCreateStatement(this);
-        }
-
-        public override string ToString() {
-            return $"VariableCreate( {ident.type} : {type.type} := {expression} )";
-        }
-    }
-
-    public struct VariableAssign : Statement {
-        readonly Token ident;
-        readonly Expression expression;
-
-        public VariableAssign(Token ident, Expression expression) {
+        public Var(Token ident, Expression expression) {
             this.ident = ident;
             this.expression = expression;
         }
 
         public T Accept<T>(Visitor<T> visitor) {
-            return visitor.VisitVariableAssignStatement(this);
+            return visitor.VisitVariableStatement(this);
         }
 
         public override string ToString() {
-            return $"VariableAssign( {ident.type} := {expression} )";
+            return $"Variable( {ident.rawValue} : {ident.type} := {expression} )";
         }
     }
 
     public struct ForLoop : Statement {
-        readonly Token ident;
-        readonly Expression start;
-        readonly Expression end;
+        public readonly Token ident;
+        public readonly Expression start;
+        public readonly Expression end;
 
-        readonly List<Statement> statements;
+        public readonly List<Statement> statements;
 
         public ForLoop(
             Token ident,
@@ -63,7 +43,7 @@ namespace miniPL {
         }
 
         public T Accept<T>(Visitor<T> visitor) {
-            return visitor.VisitForstatement(this);
+            return visitor.VisitForStatement(this);
         }
 
         public override string ToString() {
@@ -72,7 +52,7 @@ namespace miniPL {
     }
 
     public struct Read : Statement {
-        readonly Token ident;
+        public readonly Token ident;
 
         public Read(Token ident) {
             this.ident = ident;
@@ -88,7 +68,7 @@ namespace miniPL {
     }
 
     public struct Print : Statement {
-        readonly Expression expression;
+        public readonly Expression expression;
 
         public Print(Expression expression) {
             this.expression = expression;
@@ -104,7 +84,7 @@ namespace miniPL {
     }
 
     public struct Assert : Statement {
-        readonly Expression expression;
+        public readonly Expression expression;
 
         public Assert(Expression expression) {
             this.expression = expression;
@@ -116,6 +96,22 @@ namespace miniPL {
 
         public override string ToString() {
             return $"Assert( {expression} )";
+        }
+    }
+
+    public struct ExpressionStmt : Statement {
+        public readonly Expression expression;
+
+        public ExpressionStmt(Expression expression) {
+            this.expression = expression;
+        }
+
+        public T Accept<T>(Visitor<T> visitor) {
+            return visitor.VisitExpressionStatement(this);
+        }
+
+        public override string ToString() {
+            return $"ExpressionStmt( {expression} )";
         }
     }
 }

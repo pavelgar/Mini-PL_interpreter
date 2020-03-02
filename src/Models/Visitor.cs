@@ -8,16 +8,18 @@ namespace miniPL {
 
         T VisitLiteralExpression(Literal expression);
 
+        T VisitVariableExpression(Variable variable);
+
         T VisitPrintStatement(Print print);
 
         T VisitAssertStatement(Assert assert);
 
         T VisitReadStatement(Read read);
 
-        T VisitVariableCreateStatement(VariableCreate variableCreate);
+        T VisitVariableStatement(Var var);
 
-        T VisitVariableAssignStatement(VariableAssign variableAssign);
+        T VisitForStatement(ForLoop forLoop);
 
-        T VisitForstatement(ForLoop forLoop);
+        T VisitExpressionStatement(ExpressionStmt expressionStmt);
     }
 }

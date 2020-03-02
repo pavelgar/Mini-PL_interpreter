@@ -70,4 +70,19 @@ namespace miniPL {
             return $"Literal( {value} )";
         }
     }
+
+    public struct Variable : Expression {
+        public readonly Token token;
+        public Variable(Token token) {
+            this.token = token;
+        }
+
+        public T Accept<T>(Visitor<T> visitor) {
+            return visitor.VisitVariableExpression(this);
+        }
+
+        public override string ToString() {
+            return $"Variable( {token} )";
+        }
+    }
 }

@@ -18,6 +18,10 @@ namespace miniPL {
             return Parenthesize(expression.op.rawValue, expression.expr);
         }
 
+        public string VisitVariableExpression(Variable variable) {
+            throw new System.NotImplementedException();
+        }
+
         public string VisitPrintStatement(Print print) {
             throw new System.NotImplementedException();
         }
@@ -30,15 +34,15 @@ namespace miniPL {
             throw new System.NotImplementedException();
         }
 
-        public string VisitVariableCreateStatement(VariableCreate variableCreate) {
+        public string VisitVariableStatement(Var var) {
             throw new System.NotImplementedException();
         }
 
-        public string VisitVariableAssignStatement(VariableAssign variableAssign) {
+        public string VisitForStatement(ForLoop forLoop) {
             throw new System.NotImplementedException();
         }
 
-        public string VisitForstatement(ForLoop forLoop) {
+        public string VisitExpressionStatement(ExpressionStmt expressionStmt) {
             throw new System.NotImplementedException();
         }
 
