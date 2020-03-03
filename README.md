@@ -36,7 +36,7 @@ This is assignement for University of Helsinki course on Compilers.
 |  **Literals**  |
 |     IDENT      | r`[a-zA-Z][a-zA-Z0-9_]*` | Identifier                              |
 |    INTEGER     | r`[0-9]+`                | Integer constant                        |
-|     STRING     | r`\"(\\.|[^"\\])*\"`     | String constant                         |
+|     STRING     | r`\"(\\.\|[^"\\])*\"`     | String constant                         |
 |   **Other**    |
 |     COLON      | `:`                      | Variable type assignment(?)             |
 |   SEMICOLON    | `;`                      | End of statement                        |
