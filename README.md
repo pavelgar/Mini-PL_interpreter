@@ -36,7 +36,7 @@ This is assignement for University of Helsinki course on Compilers.
 |  **Literals**  |
 |     IDENT      | r`[a-zA-Z][a-zA-Z0-9_]*` | Identifier                              |
 |    INTEGER     | r`[0-9]+`                | Integer constant                        |
-|     STRING     | r`\"(\\.\|[^"\\])*\"`     | String constant                         |
+|     STRING     | r`\"(\\.\|[^"\\])*\"`    | String constant                         |
 |   **Other**    |
 |     COLON      | `:`                      | Variable type assignment(?)             |
 |   SEMICOLON    | `;`                      | End of statement                        |
@@ -61,14 +61,15 @@ This is assignement for University of Helsinki course on Compilers.
             | "read" IDENT
             | "print" <expr>
             | "assert" "(" <expr> ")"
+            | <expr>
 
 <type>      => "int" | "string" | "bool"
 
 <expr>      => <equality>
 
-<equality>  => <comp> (("=" | "&") <comp>)*
+<equality>  => <comparison> (("=" | "&") <comparison>)*
 
-<comp>      => <addition> (("<") <addition>)*
+<comparison>=> <addition> (("<") <addition>)*
 
 <addition>  => <mult> (("+" | "-") <mult>)*
 
@@ -99,6 +100,10 @@ This stops the execution of the program.
 
 #### In interpreter
 
+During the runtime the interpreter checks that the operands are of correct type for the given operator before evaluating the expression.
+If they're not the interpreter throws a `RuntimeError` with an error message.
+This stops the execution of the program.
+
 ## Work hour log
 
 | Date  | Time (h) | Work done                                                                     |
@@ -116,5 +121,6 @@ This stops the execution of the program.
 | 27.2. | 1        | Implementing tree parsing for the interpreter.                                |
 | 28.2. | 4        | Refactoring and reimplementing statements. Begin working on the environment.  |
 | 2.3.  | 2        | Working on the interpreter. Fixing bugs and done some cleanup.                |
+| 4.3.  | 5        | Finishing up the interpreter and environment. Updating documentation.         |
 
-**Total:** 44h
+**Total:** 49h
