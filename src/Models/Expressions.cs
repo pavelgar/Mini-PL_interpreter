@@ -72,9 +72,9 @@ namespace miniPL {
     }
 
     public struct Variable : Expression {
-        public readonly Token token;
-        public Variable(Token token) {
-            this.token = token;
+        public readonly Token ident;
+        public Variable(Token ident) {
+            this.ident = ident;
         }
 
         public T Accept<T>(Visitor<T> visitor) {
@@ -82,7 +82,7 @@ namespace miniPL {
         }
 
         public override string ToString() {
-            return $"Variable( {token} )";
+            return $"Variable( {ident} )";
         }
     }
 }

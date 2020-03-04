@@ -34,7 +34,7 @@ namespace miniPL {
             throw new System.NotImplementedException();
         }
 
-        public string VisitVariableStatement(Var var) {
+        public string VisitVarStatement(Var var) {
             throw new System.NotImplementedException();
         }
 

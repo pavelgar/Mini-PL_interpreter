@@ -16,7 +16,7 @@ namespace miniPL {
 
         T VisitReadStatement(Read read);
 
-        T VisitVariableStatement(Var var);
+        T VisitVarStatement(Var var);
 
         T VisitForStatement(ForLoop forLoop);
 

@@ -15,7 +15,7 @@ namespace miniPL {
         }
 
         public T Accept<T>(Visitor<T> visitor) {
-            return visitor.VisitVariableStatement(this);
+            return visitor.VisitVarStatement(this);
         }
 
         public override string ToString() {
@@ -26,18 +26,20 @@ namespace miniPL {
     public struct ForLoop : Statement {
         public readonly Token ident;
         public readonly Expression start;
+        public readonly Token range;
         public readonly Expression end;
-
         public readonly List<Statement> statements;
 
         public ForLoop(
             Token ident,
             Expression start,
+            Token range,
             Expression end,
             List<Statement> statements
         ) {
             this.ident = ident;
             this.start = start;
+            this.range = range;
             this.end = end;
             this.statements = statements;
         }
@@ -84,9 +86,11 @@ namespace miniPL {
     }
 
     public struct Assert : Statement {
+        public readonly Token token;
         public readonly Expression expression;
 
-        public Assert(Expression expression) {
+        public Assert(Token token, Expression expression) {
+            this.token = token;
             this.expression = expression;
         }
 
