@@ -24,8 +24,7 @@ namespace miniPL {
         }
 
         private static void RunFile(string path) {
-            byte[] bytes = File.ReadAllBytes(path);
-            Run(Encoding.UTF8.GetString(bytes));
+            Run(File.ReadAllText(path));
         }
 
         private static void RunPrompt() {

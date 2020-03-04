@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace miniPL {
     public class Interpreter : Visitor<object> {
@@ -21,11 +22,6 @@ namespace miniPL {
 
         private object Evaluate(Expression expression) {
             return expression.Accept(this);
-        }
-
-        private string Stringify(object obj) {
-            if (obj == null) return "null";
-            return obj.ToString();
         }
 
         public object VisitBinaryExpression(Binary expression) {
@@ -100,7 +96,9 @@ namespace miniPL {
 
         public object VisitPrintStatement(Print print) {
             object value = Evaluate(print.expression);
-            Console.WriteLine(Stringify(value));
+            if (value is string) {
+                Console.Write(Regex.Unescape((string) value));
+            } else Console.Write(value);
             return null;
         }
 
@@ -138,7 +136,7 @@ namespace miniPL {
             CheckForNumber(forLoop.range, start, end);
             environment.SetAsControl(forLoop.ident);
 
-            for (double i = (double) start; i < (double) end; i++) {
+            for (double i = (double) start; i <= (double) end; i++) {
                 environment.ControlSet(forLoop.ident, i);
                 foreach (Statement statement in forLoop.statements)
                     Execute(statement);
