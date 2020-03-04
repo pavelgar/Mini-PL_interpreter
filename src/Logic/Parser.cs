@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace miniPL {
@@ -21,7 +20,8 @@ namespace miniPL {
 
         private Statement Stmt() {
             try {
-                if (Match(TokenType.VAR)) return VariableStatement();
+                if (Match(TokenType.VAR)) return VarStatement();
+                if (Match(TokenType.FOR)) return ForStatement();
                 if (Match(TokenType.READ)) return ReadStatement();
                 if (Match(TokenType.PRINT)) return PrintStatement();
                 if (Match(TokenType.ASSERT)) return AssertStatement();
@@ -34,7 +34,7 @@ namespace miniPL {
             }
         }
 
-        private Statement VariableStatement() {
+        private Statement VarStatement() {
             Token name = Consume(TokenType.IDENT, "Expected variable name.");
             Consume(TokenType.COLON, "Expected ':' after variable name.");
             // Just check for the type declarations for now...
@@ -50,8 +50,30 @@ namespace miniPL {
             return new Var(name, expression);
         }
 
+        private Statement ForStatement() {
+            Token ident = Consume(TokenType.IDENT, "Expected variable name.");
+            Consume(TokenType.IN, "Expected 'in' after variable name.");
+
+            Expression start = Expr();
+            Token range = Consume(TokenType.RANGE, "Expected '..' after start-of-range value.");
+            Expression end = Expr();
+            Consume(TokenType.RANGE, "Expected 'do' after end-of-range value.");
+
+            List<Statement> statements = new List<Statement>();
+            while (!Check(TokenType.END) && !IsEnd()) {
+                statements.Add(Stmt());
+            }
+
+            Consume(TokenType.FOR, "Expected 'for' after 'end' keyword.");
+            Consume(TokenType.SEMICOLON, "Expected ';' after expression.");
+
+            return new ForLoop(ident, start, range, end, statements);
+        }
+
         private Statement ReadStatement() {
-            throw new NotImplementedException();
+            Token name = Consume(TokenType.IDENT, "Expected variable name.");
+            Consume(TokenType.SEMICOLON, "Expected ';' after expression.");
+            return new Read(name);
         }
 
         private Statement PrintStatement() {
@@ -64,7 +86,7 @@ namespace miniPL {
         private Statement AssertStatement() {
             Expression expression = Expr();
             Consume(TokenType.SEMICOLON, "Expected ';' after expression.");
-            return new Print(expression);
+            return new Assert(Previous(), expression);
         }
 
         private Statement ExpressionStatement() {
@@ -166,7 +188,7 @@ namespace miniPL {
                 return new Grouping(expr);
             }
 
-            throw Error(Peek(), "Expected expression.");
+            throw Error(Peek(), "Expected grouping, literal or indentifier.");
         }
 
         private Token Consume(TokenType type, string message) {
