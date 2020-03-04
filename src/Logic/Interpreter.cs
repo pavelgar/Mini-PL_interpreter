@@ -42,7 +42,7 @@ namespace miniPL {
                     }
                     throw new RuntimeError(
                         expression.op,
-                        "Both operands must be strings or numbers"
+                        "Both operands must be of type string or integer."
                     );
 
                 case TokenType.SUB:
@@ -73,6 +73,16 @@ namespace miniPL {
             }
         }
 
+        public object VisitUnaryExpression(Unary expression) {
+            // Evaluate the expresion and check if there is a '!' before it.
+            object expr = Evaluate(expression.expr);
+            if (expression.op.type == TokenType.NOT) {
+                CheckForBoolean(expression.op, expr);
+                return (bool) expr;
+            }
+            return null;
+        }
+
         public object VisitGroupingExpression(Grouping expression) {
             // Evaluate the expression before returning it.
             return Evaluate(expression.expr);
@@ -83,17 +93,9 @@ namespace miniPL {
             return expression.value;
         }
 
-        public object VisitUnaryExpression(Unary expression) {
-            // Evaluate the expresion and check if there is a '!' before it.
-            object expr = Evaluate(expression.expr);
-            if (expression.op.type == TokenType.NOT) {
-                return !ConvertToBoolean(expr);
-            }
-            return null;
-        }
-
         public object VisitVariableExpression(Variable variable) {
-            return environment.Get(variable.token);
+            // Return the stored value associated with that identifier.
+            return environment.Get(variable.ident);
         }
 
         public object VisitPrintStatement(Print print) {
@@ -103,42 +105,66 @@ namespace miniPL {
         }
 
         public object VisitAssertStatement(Assert assert) {
-            throw new NotImplementedException();
+            object value = Evaluate(assert.expression);
+            CheckForBoolean(assert.token, value);
+            return (bool) value;
         }
 
         public object VisitReadStatement(Read read) {
-            throw new NotImplementedException();
+            string input = Console.ReadLine().Split(null) [0];
+
+            if (double.TryParse(input, out double i))
+                environment.Set(read.ident, i);
+            else if (input.Equals("true"))
+                environment.Set(read.ident, true);
+            else if (input.Equals("false"))
+                environment.Set(read.ident, false);
+            else
+                environment.Set(read.ident, input);
+
+            return null;
         }
 
-        public object VisitVariableStatement(Var var) {
+        public object VisitVarStatement(Var var) {
             object value = var.expression == null ? null : Evaluate(var.expression);
-            environment.Define(var.ident.rawValue, value);
+            environment.Define(var.ident, value);
             return null;
         }
 
         public object VisitForStatement(ForLoop forLoop) {
-            throw new NotImplementedException();
+            object start = Evaluate(forLoop.start);
+            object end = Evaluate(forLoop.end);
+
+            CheckForNumber(forLoop.range, start, end);
+            environment.SetAsControl(forLoop.ident);
+
+            for (double i = (double) start; i < (double) end; i++) {
+                environment.ControlSet(forLoop.ident, i);
+                foreach (Statement statement in forLoop.statements)
+                    Execute(statement);
+            }
+            environment.RemoveFromControl(forLoop.ident);
+            return null;
         }
 
         public object VisitExpressionStatement(ExpressionStmt expressionStmt) {
-            throw new NotImplementedException();
-        }
-
-        private bool ConvertToBoolean(object obj) {
-            if (obj == null) return false;
-            // Tries to cast the evaluated expression to boolean
-            if (obj is bool) return (bool) obj;
-            return true;
+            Evaluate(expressionStmt.expression);
+            return null;
         }
 
         private void CheckForNumber(Token op, object left, object right) {
             if (left is double && right is double) return;
-            throw new RuntimeError(op, "Both operands must be numbers.");
+            throw new RuntimeError(op, "Both operands must be of type integer.");
         }
 
         private void CheckForBoolean(Token op, object left, object right) {
             if (left is bool && right is bool) return;
-            throw new RuntimeError(op, "Both operands must be boolean.");
+            throw new RuntimeError(op, "Both operands must be of type bool.");
+        }
+
+        private void CheckForBoolean(Token op, object value) {
+            if (value is bool) return;
+            throw new RuntimeError(op, "The operand must be of type bool.");
         }
 
         private bool IsEqual(object a, object b) {
