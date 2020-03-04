@@ -7,10 +7,12 @@ namespace miniPL {
 
     public struct Var : Statement {
         public readonly Token ident;
+        public readonly Token type;
         public readonly Expression expression;
 
-        public Var(Token ident, Expression expression) {
+        public Var(Token ident, Token type, Expression expression) {
             this.ident = ident;
+            this.type = type;
             this.expression = expression;
         }
 
@@ -19,7 +21,7 @@ namespace miniPL {
         }
 
         public override string ToString() {
-            return $"Variable( {ident.rawValue} : {ident.type} := {expression} )";
+            return $"Variable( {ident.rawValue} : {type.rawValue} := {expression} )";
         }
     }
 

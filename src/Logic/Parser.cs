@@ -37,17 +37,34 @@ namespace miniPL {
         private Statement VarStatement() {
             Token name = Consume(TokenType.IDENT, "Expected variable name.");
             Consume(TokenType.COLON, "Expected ':' after variable name.");
-            // Just check for the type declarations for now...
-            // TODO: Actually use the type declarations in variable creation
-            Match(TokenType.STR, TokenType.BOOL, TokenType.INT);
 
+            if (!Match(TokenType.STR, TokenType.BOOL, TokenType.INT)) {
+                throw Error(Previous(), "Expected type declaration after variable name and ':'.");
+            }
+
+            Token type = Previous();
             Expression expression = null;
             if (Match(TokenType.ASSIGN)) {
                 expression = Expr();
+            } else {
+                // Default values for the three data types.
+                switch (type.type) {
+                    case TokenType.STR:
+                        expression = new Literal("");
+                        break;
+
+                    case TokenType.BOOL:
+                        expression = new Literal(false);
+                        break;
+
+                    case TokenType.INT:
+                        expression = new Literal(0);
+                        break;
+                }
             }
 
             Consume(TokenType.SEMICOLON, "Expected ';' after variable declaration.");
-            return new Var(name, expression);
+            return new Var(name, type, expression);
         }
 
         private Statement ForStatement() {
@@ -57,15 +74,16 @@ namespace miniPL {
             Expression start = Expr();
             Token range = Consume(TokenType.RANGE, "Expected '..' after start-of-range value.");
             Expression end = Expr();
-            Consume(TokenType.RANGE, "Expected 'do' after end-of-range value.");
+            Consume(TokenType.DO, "Expected 'do' after end-of-range value.");
 
             List<Statement> statements = new List<Statement>();
             while (!Check(TokenType.END) && !IsEnd()) {
                 statements.Add(Stmt());
             }
 
+            Consume(TokenType.END, "Expected 'end' after for loop body.");
             Consume(TokenType.FOR, "Expected 'for' after 'end' keyword.");
-            Consume(TokenType.SEMICOLON, "Expected ';' after expression.");
+            Consume(TokenType.SEMICOLON, "Expected ';' after closing 'for' keyword.");
 
             return new ForLoop(ident, start, range, end, statements);
         }
