@@ -145,7 +145,7 @@ namespace miniPL {
             CheckForNumber(forLoop.range, start, end);
             environment.SetAsControl(forLoop.ident);
 
-            for (double i = (double) start; i <= (double) end; i++) {
+            for (double i = (double) start; i < (double) end; i++) {
                 environment.ControlAssign(forLoop.ident, i);
                 foreach (Statement statement in forLoop.statements)
                     Execute(statement);
