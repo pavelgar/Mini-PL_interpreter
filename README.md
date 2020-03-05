@@ -10,9 +10,9 @@ This is assignement for University of Helsinki course on Compilers.
 |  **Keywords**  |
 |      VAR       | `var`                    | Variable assignment                     |
 |      FOR       | `for`                    | For-loop constructor                    |
-|      END       | `end`                    | End code block                          |
+|      END       | `end`                    | End of code block                       |
 |       IN       | `in`                     | Range specifier                         |
-|       DO       | `do`                     | Start code block                        |
+|       DO       | `do`                     | Start of code block                     |
 |      READ      | `read`                   | Read from stdin                         |
 |     PRINT      | `print`                  | Write to stdout                         |
 |      INT       | `int`                    | Integer type                            |
@@ -33,15 +33,16 @@ This is assignement for University of Helsinki course on Compilers.
 |     IDENT      | r`[a-zA-Z][a-zA-Z0-9_]*` | Identifier                              |
 |    INTEGER     | r`[0-9]+`                | Integer constant                        |
 |     STRING     | r`\"(\\.\|[^"\\])*\"`    | String constant                         |
-|    BOOLEAN     | `true` or `false`        | Boolean constants                       |
+|    BOOLEAN     | r`true|false`            | Boolean constants                       |
 |   **Other**    |
-|     COLON      | `:`                      | Variable type assignment(?)             |
+|     COLON      | `:`                      | Variable type assignment                |
 |   SEMICOLON    | `;`                      | End of statement                        |
-|     RANGE      | `..`                     | Create sequence of integers             |
+|     RANGE      | `..`                     | Range of integers                       |
 |   LEFT_PAREN   | `(`                      | Start nested expression                 |
 |  RIGHT_PAREN   | `)`                      | End nested expression                   |
 |     ASSIGN     | `:=`                     | Variable assignment                     |
 |      EOF       |                          | End of file                             |
+|   SCAN_ERROR   |                          | Unexpected token                        |
 
 ## Modified context-free grammar
 
