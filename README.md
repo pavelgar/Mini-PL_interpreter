@@ -97,10 +97,9 @@ possible syntax errors.
 
 Parser throws `ParseError` if the next token is not what it's expecting or if a
 statement boundary is missing/unexpected.
-
 Thrown `ParseError` contains a helpful message and the token which produced the error.
-
-`ParseError`s stop the execution of the program.
+It catches the `ParseError` and tries to sync the program back to the next statement
+and continue parsing.
 
 ### In semantic analyzer and interpreter
 
@@ -117,7 +116,8 @@ helpful message about the error.
 
 Assert statement also throws a `RuntimeError` if the asserted expression evaluates to `false`.
 
-`RuntimeError`s stop the execution of the program.
+The interpreter does not catch these `RuntimeError`s therefore the execution halts on
+first such error.
 
 ## Work hour log
 
@@ -137,6 +137,6 @@ Assert statement also throws a `RuntimeError` if the asserted expression evaluat
 | 28.2. | 4        | Refactoring and reimplementing statements. Begin working on the environment.  |
 | 2.3.  | 2        | Working on the interpreter. Fixing bugs and done some cleanup.                |
 | 4.3.  | 5        | Finishing up the interpreter and environment. Updating documentation.         |
-| 5.3.  | 3        | Adding variable assignment, boolean type and updating documentation.          |
+| 5.3.  | 4        | Adding variable assignment, boolean type and updating documentation.          |
 
-**Total:** 52h
+**Total:** 53h
