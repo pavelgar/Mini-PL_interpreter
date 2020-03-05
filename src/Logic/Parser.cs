@@ -102,9 +102,12 @@ namespace miniPL {
         }
 
         private Statement AssertStatement() {
+            Token assert = Previous();
+            Consume(TokenType.LEFT_PAREN, "Expected '(' after 'assert'.");
             Expression expression = Expr();
+            Consume(TokenType.RIGHT_PAREN, "Expected ')' after expression.");
             Consume(TokenType.SEMICOLON, "Expected ';' after expression.");
-            return new Assert(Previous(), expression);
+            return new Assert(assert, expression);
         }
 
         private Statement ExpressionStatement() {
@@ -133,7 +136,23 @@ namespace miniPL {
         }
 
         private Expression Expr() {
-            return Equality();
+            return Assignment();
+        }
+
+        private Expression Assignment() {
+            Expression expr = Equality();
+
+            if (Match(TokenType.ASSIGN)) {
+                Token assign = Previous();
+                Expression value = Assignment();
+
+                if (expr is Variable) {
+                    Token ident = ((Variable) expr).ident;
+                    return new Assignment(ident, value);
+                }
+                Error(assign, "Invalid assignment target.");
+            }
+            return expr;
         }
 
         private Expression Equality() {
@@ -186,26 +205,21 @@ namespace miniPL {
                 Expression right = Unary();
                 return new Unary(op, right);
             }
-
             return Primary();
         }
 
         private Expression Primary() {
-            if (Match(TokenType.TRUE)) return new Literal(true);
-            if (Match(TokenType.FALSE)) return new Literal(false);
-
-            if (Match(TokenType.INTEGER, TokenType.STRING))
+            if (Match(TokenType.INTEGER, TokenType.STRING, TokenType.BOOLEAN)) {
                 return new Literal(Previous().literal);
-
-            if (Match(TokenType.IDENT))
+            }
+            if (Match(TokenType.IDENT)) {
                 return new Variable(Previous());
-
+            }
             if (Match(TokenType.LEFT_PAREN)) {
                 Expression expr = Expr();
                 Consume(TokenType.RIGHT_PAREN, "Expected ')' after expression.");
                 return new Grouping(expr);
             }
-
             throw Error(Peek(), "Expected grouping, literal or indentifier.");
         }
 

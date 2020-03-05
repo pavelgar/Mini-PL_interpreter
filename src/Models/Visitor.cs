@@ -10,6 +10,8 @@ namespace miniPL {
 
         T VisitVariableExpression(Variable variable);
 
+        T VisitAssignmentExpression(Assignment assingment);
+
         T VisitPrintStatement(Print print);
 
         T VisitAssertStatement(Assert assert);

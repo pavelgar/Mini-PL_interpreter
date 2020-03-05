@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 
 namespace miniPL {
@@ -19,31 +20,35 @@ namespace miniPL {
         }
 
         public string VisitVariableExpression(Variable variable) {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
+        }
+
+        public string VisitAssignmentExpression(Assignment assingment) {
+            throw new NotImplementedException();
         }
 
         public string VisitPrintStatement(Print print) {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public string VisitAssertStatement(Assert assert) {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public string VisitReadStatement(Read read) {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public string VisitVarStatement(Var var) {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public string VisitForStatement(ForLoop forLoop) {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public string VisitExpressionStatement(ExpressionStmt expressionStmt) {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         string Print(Expression expression) {

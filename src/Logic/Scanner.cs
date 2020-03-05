@@ -101,8 +101,10 @@ namespace miniPL {
                     return CreateToken(TokenType.INTEGER, ParseNumber());
 
                 // Identifiers and keywords
-                case var letter when char.IsLetter(c):
-                    return CreateToken(ParseIdentifier(), null);
+                case var letter when char.IsLetter(c): {
+                    (TokenType type, object literal) = ParseIdentifier();
+                    return CreateToken(type, literal);
+                }
 
                 default:
                     Program.Error(line, $"Unexpected character '{c}'.");
@@ -110,7 +112,7 @@ namespace miniPL {
             }
         }
 
-        private TokenType ParseIdentifier() {
+        private(TokenType type, object literal) ParseIdentifier() {
             // Read while there are letters, digits or underscores
             while (char.IsLetterOrDigit(Peek()) || Peek() == '_') Advance();
 
@@ -119,33 +121,33 @@ namespace miniPL {
             // Check if the identifier is a reserved keyword
             switch (text) {
                 case "var":
-                    return TokenType.VAR;
+                    return (TokenType.VAR, null);
                 case "for":
-                    return TokenType.FOR;
+                    return (TokenType.FOR, null);
                 case "end":
-                    return TokenType.END;
+                    return (TokenType.END, null);
                 case "in":
-                    return TokenType.IN;
+                    return (TokenType.IN, null);
                 case "do":
-                    return TokenType.DO;
+                    return (TokenType.DO, null);
                 case "read":
-                    return TokenType.READ;
+                    return (TokenType.READ, null);
                 case "print":
-                    return TokenType.PRINT;
+                    return (TokenType.PRINT, null);
                 case "int":
-                    return TokenType.INT;
+                    return (TokenType.INT, null);
                 case "string":
-                    return TokenType.STR;
+                    return (TokenType.STR, null);
                 case "bool":
-                    return TokenType.BOOL;
+                    return (TokenType.BOOL, null);
                 case "true":
-                    return TokenType.TRUE;
+                    return (TokenType.BOOLEAN, true);
                 case "false":
-                    return TokenType.FALSE;
+                    return (TokenType.BOOLEAN, false);
                 case "assert":
-                    return TokenType.ASSERT;
+                    return (TokenType.ASSERT, null);
                 default:
-                    return TokenType.IDENT;
+                    return (TokenType.IDENT, text);
             }
         }
 

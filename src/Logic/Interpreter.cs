@@ -71,10 +71,10 @@ namespace miniPL {
 
         public object VisitUnaryExpression(Unary expression) {
             // Evaluate the expresion and check if there is a '!' before it.
-            object expr = Evaluate(expression.expr);
+            object value = Evaluate(expression.expr);
             if (expression.op.type == TokenType.NOT) {
-                CheckForBoolean(expression.op, expr);
-                return (bool) expr;
+                CheckForBoolean(expression.op, value);
+                return (bool) value;
             }
             return null;
         }
@@ -94,6 +94,12 @@ namespace miniPL {
             return environment.Get(variable.ident);
         }
 
+        public object VisitAssignmentExpression(Assignment assingment) {
+            object value = Evaluate(assingment.expr);
+            environment.Assign(assingment.ident, value);
+            return null;
+        }
+
         public object VisitPrintStatement(Print print) {
             object value = Evaluate(print.expression);
             if (value is string) {
@@ -105,6 +111,9 @@ namespace miniPL {
         public object VisitAssertStatement(Assert assert) {
             object value = Evaluate(assert.expression);
             CheckForBoolean(assert.token, value);
+            if (!(bool) value) {
+                throw new RuntimeError(assert.token, "Assertion failed.");
+            }
             return (bool) value;
         }
 
@@ -112,13 +121,13 @@ namespace miniPL {
             string input = Console.ReadLine().Split(null) [0];
 
             if (double.TryParse(input, out double i))
-                environment.Set(read.ident, i);
+                environment.Assign(read.ident, i);
             else if (input.Equals("true"))
-                environment.Set(read.ident, true);
+                environment.Assign(read.ident, true);
             else if (input.Equals("false"))
-                environment.Set(read.ident, false);
+                environment.Assign(read.ident, false);
             else
-                environment.Set(read.ident, input);
+                environment.Assign(read.ident, input);
 
             return null;
         }
@@ -137,7 +146,7 @@ namespace miniPL {
             environment.SetAsControl(forLoop.ident);
 
             for (double i = (double) start; i <= (double) end; i++) {
-                environment.ControlSet(forLoop.ident, i);
+                environment.ControlAssign(forLoop.ident, i);
                 foreach (Statement statement in forLoop.statements)
                     Execute(statement);
             }

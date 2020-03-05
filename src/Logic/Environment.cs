@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace miniPL {
@@ -7,30 +6,32 @@ namespace miniPL {
         private readonly HashSet<string> control = new HashSet<string>();
 
         public void Define(Token token, object value) {
-            if (variables.ContainsKey(token.rawValue)) {
-                throw new RuntimeError(token, $"Variable '{token.rawValue}' already defined.");
+            if (!variables.ContainsKey(token.rawValue)) {
+                variables[token.rawValue] = value;
+                return;
             }
-            variables[token.rawValue] = value;
+            throw new RuntimeError(token, $"Variable '{token.rawValue}' already defined.");
         }
 
         public object Get(Token token) {
-            if (!variables.ContainsKey(token.rawValue)) {
-                throw new RuntimeError(token, $"Undefined variable '{token.rawValue}'.");
+            if (variables.ContainsKey(token.rawValue)) {
+                return variables[token.rawValue];
             }
-            return variables[token.rawValue];
+            throw new RuntimeError(token, $"Undefined variable '{token.rawValue}'.");
         }
 
-        public void Set(Token token, object value) {
+        public void Assign(Token token, object value) {
             if (control.Contains(token.rawValue)) {
                 throw new RuntimeError(token, $"Can't assign to a control variable '{token.rawValue}'.");
             }
-            if (!variables.ContainsKey(token.rawValue)) {
-                throw new RuntimeError(token, $"Undefined variable '{token.rawValue}'.");
+            if (variables.ContainsKey(token.rawValue)) {
+                variables[token.rawValue] = value;
+                return;
             }
-            variables[token.rawValue] = value;
+            throw new RuntimeError(token, $"Undefined variable '{token.rawValue}'.");
         }
 
-        public void ControlSet(Token token, object value) {
+        public void ControlAssign(Token token, object value) {
             if (!control.Contains(token.rawValue)) {
                 throw new RuntimeError(token, $"'{token.rawValue}' is not a control variable.");
             }
@@ -53,7 +54,9 @@ namespace miniPL {
         }
 
         public void RemoveFromControl(Token token) {
-            control.Remove(token.rawValue);
+            if (!control.Remove(token.rawValue)) {
+                throw new RuntimeError(token, $"'{token.rawValue}' is not a control variable.");
+            }
         }
 
     }

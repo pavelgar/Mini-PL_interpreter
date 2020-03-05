@@ -19,7 +19,7 @@ namespace miniPL {
         }
 
         public override string ToString() {
-            return $"Binary( {left} {op.type} {right} )";
+            return $"Binary({left} {op.type} {right})";
         }
     }
 
@@ -37,7 +37,7 @@ namespace miniPL {
         }
 
         public override string ToString() {
-            return $"Unary( {op.type} {expr} )";
+            return $"Unary({op.type} {expr})";
         }
     }
 
@@ -52,7 +52,7 @@ namespace miniPL {
         }
 
         public override string ToString() {
-            return $"Grouping( {expr} )";
+            return $"Grouping({expr})";
         }
     }
 
@@ -67,7 +67,7 @@ namespace miniPL {
         }
 
         public override string ToString() {
-            return $"Literal( {value} )";
+            return $"Literal({value})";
         }
     }
 
@@ -82,7 +82,24 @@ namespace miniPL {
         }
 
         public override string ToString() {
-            return $"Variable( {ident} )";
+            return $"Variable({ident.rawValue})";
+        }
+    }
+
+    public struct Assignment : Expression {
+        public readonly Token ident;
+        public readonly Expression expr;
+        public Assignment(Token ident, Expression expr) {
+            this.ident = ident;
+            this.expr = expr;
+        }
+
+        public T Accept<T>(Visitor<T> visitor) {
+            return visitor.VisitAssignmentExpression(this);
+        }
+
+        public override string ToString() {
+            return $"Assingment({ident.rawValue} := {expr})";
         }
     }
 }

@@ -11,8 +11,6 @@ namespace miniPL {
         INT,
         STR,
         BOOL,
-        TRUE,
-        FALSE,
         ASSERT,
 
         // Arithmetic
@@ -31,6 +29,7 @@ namespace miniPL {
         IDENT,
         INTEGER,
         STRING,
+        BOOLEAN,
 
         // Other
         COLON,
