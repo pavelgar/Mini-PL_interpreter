@@ -3,9 +3,7 @@
 Interpreter for Mini-PL language.
 This is assignement for University of Helsinki course on Compilers.
 
-## Documentation
-
-### Token patterns
+## Token patterns
 
 |     token      | regex or token           | explanation                             |
 | :------------: | :----------------------- | :-------------------------------------- |
@@ -20,8 +18,6 @@ This is assignement for University of Helsinki course on Compilers.
 |      INT       | `int`                    | Integer type                            |
 |      STR       | `string`                 | String type                             |
 |      BOOL      | `bool`                   | Boolean type                            |
-|      TRUE      | `true`                   | Boolean value true                      |
-|     FALSE      | `false`                  | Boolean value false                     |
 |     ASSERT     | `assert`                 | Program state verification              |
 | **Arithmetic** |
 |      ADD       | `+`                      | Arithmetic add and string concatenation |
@@ -37,6 +33,7 @@ This is assignement for University of Helsinki course on Compilers.
 |     IDENT      | r`[a-zA-Z][a-zA-Z0-9_]*` | Identifier                              |
 |    INTEGER     | r`[0-9]+`                | Integer constant                        |
 |     STRING     | r`\"(\\.\|[^"\\])*\"`    | String constant                         |
+|    BOOLEAN     | `true` or `false`        | Boolean constants                       |
 |   **Other**    |
 |     COLON      | `:`                      | Variable type assignment(?)             |
 |   SEMICOLON    | `;`                      | End of statement                        |
@@ -46,7 +43,7 @@ This is assignement for University of Helsinki course on Compilers.
 |     ASSIGN     | `:=`                     | Variable assignment                     |
 |      EOF       |                          | End of file                             |
 
-### Modified context-free grammar
+## Modified context-free grammar
 
 ```
 <program>   => <stmts>
@@ -54,18 +51,20 @@ This is assignement for University of Helsinki course on Compilers.
 <stmts>     => ( <stmt> ";" )*
 
 <stmt>      => "var" IDENT ":" <type> [ ":=" <expr> ]
-            | IDENT ":=" <expr>
-            | "for" IDENT "in" <expr> ".." <expr> "do"
-                  <stmts>
-              "end" "for"
-            | "read" IDENT
-            | "print" <expr>
-            | "assert" "(" <expr> ")"
-            | <expr>
+             | "for" IDENT "in" <expr> ".." <expr> "do"
+                   <stmts>
+               "end" "for"
+             | "read" IDENT
+             | "print" <expr>
+             | "assert" "(" <expr> ")"
+             | <expr>
 
 <type>      => "int" | "string" | "bool"
 
-<expr>      => <equality>
+<expr>      => <assignment>
+
+<assignment>=> IDENT ":=" <assignment>
+             | <equality>
 
 <equality>  => <comparison> (("=" | "&") <comparison>)*
 
@@ -77,32 +76,48 @@ This is assignement for University of Helsinki course on Compilers.
 
 <unary>     => "!" (<unary> | <primary>)
 
-<primary>   => INT | STRING | IDENT | "true" | "false" | "(" <expr> ")"
+<primary>   => | IDENT | INTEGER | STRING | BOOLEAN | "(" <expr> ")"
 ```
 
-### Abstract syntax trees
+## Abstract syntax trees
 
-### Error handling
+## Error handling
 
-#### In scanner
+### In scanner
 
-Upon noticing an invalid/unexpected character the scanner rejects that character
-and returns a `SCAN_ERROR` token instead.
-The scanner also reports the inconsistency using `Program.Error();` with a user-friendly message.
-It continues to parse the characters after reporting the error.
+Upon noticing an invalid or unexpected character (or unterminated string) the scanner
+rejects that character and returns a `SCAN_ERROR` token instead.
+The scanner also reports the inconsistency using `Program.Error()` with a user-friendly
+message.
 
-#### In parser
+It continues to parse characters after reporting the error to seek out any other
+possible syntax errors.
 
-Parser defines a `ParseError` which is thrown if the next token is unexpected or if a statement boundary is missing/unexpected.
-This stops the execution of the program.
+### In parser
 
-#### In semantic analyzer
+Parser throws `ParseError` if the next token is not what it's expecting or if a
+statement boundary is missing/unexpected.
 
-#### In interpreter
+Thrown `ParseError` contains a helpful message and the token which produced the error.
 
-During the runtime the interpreter checks that the operands are of correct type for the given operator before evaluating the expression.
+`ParseError`s stop the execution of the program.
+
+### In semantic analyzer and interpreter
+
+Error handling of the semantic analyzer and the interpreter are bound together.
+
+During the runtime the interpreter checks that the operands are of correct type for the
+given operator before evaluating the expression.
 If they're not the interpreter throws a `RuntimeError` with an error message.
-This stops the execution of the program.
+
+The interpreter (namely the environment) has checks for program's variable management
+such as _Undefined variable_, _Variable already defined_,
+_No assignment to control variable_, etc. which also throw a `RuntimeError` with a
+helpful message about the error.
+
+Assert statement also throws a `RuntimeError` if the asserted expression evaluates to `false`.
+
+`RuntimeError`s stop the execution of the program.
 
 ## Work hour log
 
@@ -122,5 +137,6 @@ This stops the execution of the program.
 | 28.2. | 4        | Refactoring and reimplementing statements. Begin working on the environment.  |
 | 2.3.  | 2        | Working on the interpreter. Fixing bugs and done some cleanup.                |
 | 4.3.  | 5        | Finishing up the interpreter and environment. Updating documentation.         |
+| 5.3.  | 3        | Adding variable assignment, boolean type and updating documentation.          |
 
-**Total:** 49h
+**Total:** 52h
