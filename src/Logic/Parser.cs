@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace miniPL {
@@ -11,10 +12,7 @@ namespace miniPL {
 
         public List<Statement> Parse() {
             List<Statement> statements = new List<Statement>();
-
-            while (!IsEnd())
-                statements.Add(Stmt());
-
+            while (!IsEnd()) statements.Add(Stmt());
             return statements;
         }
 

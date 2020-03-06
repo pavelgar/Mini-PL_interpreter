@@ -15,6 +15,12 @@ namespace miniPL {
         public List<Token> ScanTokens() {
             List<Token> tokens = new List<Token>();
             while (!IsEOF()) tokens.Add(ScanToken());
+            Token last = tokens[tokens.Count - 1];
+
+            // Fix fo when the last character of the source is a valid token e.g. a semicolon.
+            if (last.type != TokenType.EOF) {
+                tokens.Add(new Token(TokenType.EOF, "", null, line));
+            }
             return tokens;
         }
 
