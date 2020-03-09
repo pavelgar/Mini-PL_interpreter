@@ -1,0 +1,10 @@
+var x : int := (4 + 6) * 2;
+// 20
+x := x / 3;
+// 6
+x := x * 20 - 42;
+// 78
+print x;
+assert(x < 100);
+print " is less than 100\n";
+assert(!false & true);

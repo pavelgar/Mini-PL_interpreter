@@ -1,0 +1,27 @@
+// Variable declaration
+var x : int := 10;
+var i : int;
+
+// For loop
+for i in x .. x + 10 do
+    // Printing strings, integers and special characters
+    print "Hello world (";
+    print i;
+    print ")\n";
+end for;
+
+// Reading user input
+print "say something > ";
+var input : string;
+read input;
+
+// String concatenation
+print "you said: " + input;
+
+/*
+Boolean type and assert test
+Also testing for multiline comment
+/* which can be nested. */
+*/
+var boolean : bool := true;
+assert (boolean);
