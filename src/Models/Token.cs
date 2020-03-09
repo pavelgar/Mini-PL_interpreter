@@ -10,9 +10,5 @@ namespace miniPL {
             this.literal = literal;
             this.line = line;
         }
-
-        public override string ToString() {
-            return $"Token(line: {line}, type: {type}, raw: {rawValue}, literal: {literal})";
-        }
     }
 }

@@ -19,10 +19,6 @@ namespace miniPL {
         public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitVarStatement(this);
         }
-
-        public override string ToString() {
-            return $"Variable( {ident.rawValue} : {type.rawValue} := {expression} )";
-        }
     }
 
     public struct ForLoop : Statement {
@@ -49,10 +45,6 @@ namespace miniPL {
         public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitForStatement(this);
         }
-
-        public override string ToString() {
-            return $"ForLoop( {ident.type} in {start} .. {end}:\n    {string.Join("\n    ", statements)}\n)";
-        }
     }
 
     public struct Read : Statement {
@@ -65,10 +57,6 @@ namespace miniPL {
         public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitReadStatement(this);
         }
-
-        public override string ToString() {
-            return $"Read( {ident.type} )";
-        }
     }
 
     public struct Print : Statement {
@@ -80,10 +68,6 @@ namespace miniPL {
 
         public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitPrintStatement(this);
-        }
-
-        public override string ToString() {
-            return $"Print( {expression} )";
         }
     }
 
@@ -99,10 +83,6 @@ namespace miniPL {
         public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitAssertStatement(this);
         }
-
-        public override string ToString() {
-            return $"Assert( {expression} )";
-        }
     }
 
     public struct ExpressionStmt : Statement {
@@ -114,10 +94,6 @@ namespace miniPL {
 
         public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitExpressionStatement(this);
-        }
-
-        public override string ToString() {
-            return $"ExpressionStmt( {expression} )";
         }
     }
 }

@@ -17,10 +17,6 @@ namespace miniPL {
         public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitBinaryExpression(this);
         }
-
-        public override string ToString() {
-            return $"Binary({left} {op.type} {right})";
-        }
     }
 
     public struct Unary : Expression {
@@ -35,10 +31,6 @@ namespace miniPL {
         public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitUnaryExpression(this);
         }
-
-        public override string ToString() {
-            return $"Unary({op.type} {expr})";
-        }
     }
 
     public struct Grouping : Expression {
@@ -49,10 +41,6 @@ namespace miniPL {
 
         public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitGroupingExpression(this);
-        }
-
-        public override string ToString() {
-            return $"Grouping({expr})";
         }
     }
 
@@ -65,10 +53,6 @@ namespace miniPL {
         public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitLiteralExpression(this);
         }
-
-        public override string ToString() {
-            return $"Literal({value})";
-        }
     }
 
     public struct Variable : Expression {
@@ -79,10 +63,6 @@ namespace miniPL {
 
         public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitVariableExpression(this);
-        }
-
-        public override string ToString() {
-            return $"Variable({ident.rawValue})";
         }
     }
 
@@ -96,10 +76,6 @@ namespace miniPL {
 
         public T Accept<T>(Visitor<T> visitor) {
             return visitor.VisitAssignmentExpression(this);
-        }
-
-        public override string ToString() {
-            return $"Assingment({ident.rawValue} := {expr})";
         }
     }
 }
