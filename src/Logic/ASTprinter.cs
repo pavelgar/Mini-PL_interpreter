@@ -12,19 +12,7 @@ namespace miniPL {
         }
 
         public string Print(Statement[] statements) {
-            StringBuilder builder = new StringBuilder("Program (\n");
-            indent += increment;
-            foreach (Statement statement in statements) {
-                builder.Append(new string(' ', indent));
-                builder.Append(Print(statement));
-            }
-
-            builder.Append("\n)");
-            return builder.ToString();
-        }
-
-        public string Print(Statement statement) {
-            return statement.Accept(this);
+            return Parenthesize("Program", statements);
         }
 
         public string VisitBinaryExpression(Binary expression) {
@@ -37,6 +25,9 @@ namespace miniPL {
 
         public string VisitLiteralExpression(Literal expression) {
             string value = expression.value == null ? "null" : expression.value.ToString();
+            if (expression.value is string) {
+                return $"Literal (\"{value}\")";
+            }
             return $"Literal ({value})";
         }
 
@@ -69,7 +60,8 @@ namespace miniPL {
         }
 
         public string VisitForStatement(ForLoop forLoop) {
-            return Parenthesize($"ForLoop [{forLoop.ident.rawValue}]", forLoop.start, forLoop.end);
+            string title = $"ForLoop [{forLoop.ident.rawValue} in {forLoop.start.Accept(this)} .. {forLoop.end.Accept(this)}]";
+            return Parenthesize(title, forLoop.statements);
         }
 
         public string VisitExpressionStatement(ExpressionStmt expressionStmt) {
@@ -83,6 +75,22 @@ namespace miniPL {
             foreach (Expression expression in expressions) {
                 builder.Append(new string(' ', indent));
                 builder.Append(expression.Accept(this));
+                builder.Append('\n');
+            }
+
+            indent -= increment;
+            builder.Append(new string(' ', indent) + ")");
+
+            return builder.ToString();
+        }
+
+        private string Parenthesize(string name, params Statement[] statements) {
+            StringBuilder builder = new StringBuilder($"{name} (\n");
+            indent += increment;
+
+            foreach (Statement statement in statements) {
+                builder.Append(new string(' ', indent));
+                builder.Append(statement.Accept(this));
                 builder.Append('\n');
             }
 
