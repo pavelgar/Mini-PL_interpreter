@@ -30,8 +30,8 @@ namespace miniPL {
 
             switch (expression.op.type) {
                 case TokenType.ADD:
-                    if (left is double && right is double) {
-                        return (double) left + (double) right;
+                    if (left is int && right is int) {
+                        return (int) left + (int) right;
                     }
                     if (left is string && right is string) {
                         return (string) left + (string) right;
@@ -43,19 +43,19 @@ namespace miniPL {
 
                 case TokenType.SUB:
                     CheckForNumber(expression.op, left, right);
-                    return (double) left - (double) right;
+                    return (int) left - (int) right;
 
                 case TokenType.MULT:
                     CheckForNumber(expression.op, left, right);
-                    return (double) left * (double) right;
+                    return (int) left * (int) right;
 
                 case TokenType.DIV:
                     CheckForNumber(expression.op, left, right);
-                    return (double) left / (double) right;
+                    return (int) left / (int) right;
 
                 case TokenType.LT:
                     CheckForNumber(expression.op, left, right);
-                    return (double) left < (double) right;
+                    return (int) left < (int) right;
 
                 case TokenType.EQ:
                     return IsEqual(left, right);
@@ -104,7 +104,9 @@ namespace miniPL {
             object value = Evaluate(print.expression);
             if (value is string) {
                 Console.Write(Regex.Unescape((string) value));
-            } else Console.Write(value);
+            } else {
+                Console.Write(value);
+            }
             return null;
         }
 
@@ -120,15 +122,11 @@ namespace miniPL {
         public object VisitReadStatement(Read read) {
             string input = Console.ReadLine().Split(null) [0];
 
-            if (double.TryParse(input, out double i))
+            if (int.TryParse(input, out int i)) {
                 environment.Assign(read.ident, i);
-            else if (input.Equals("true"))
-                environment.Assign(read.ident, true);
-            else if (input.Equals("false"))
-                environment.Assign(read.ident, false);
-            else
+            } else {
                 environment.Assign(read.ident, input);
-
+            }
             return null;
         }
 
@@ -145,7 +143,7 @@ namespace miniPL {
             CheckForNumber(forLoop.range, start, end);
             environment.SetAsControl(forLoop.ident);
 
-            for (double i = (double) start; i < (double) end; i++) {
+            for (int i = (int) start; i < (int) end; i++) {
                 environment.ControlAssign(forLoop.ident, i);
                 foreach (Statement statement in forLoop.statements)
                     Execute(statement);
@@ -160,7 +158,7 @@ namespace miniPL {
         }
 
         private void CheckForNumber(Token op, object left, object right) {
-            if (left is double && right is double) return;
+            if (left is int && right is int) return;
             throw new RuntimeError(op, "Both operands must be of type integer.");
         }
 
