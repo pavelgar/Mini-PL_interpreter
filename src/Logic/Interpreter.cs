@@ -74,7 +74,7 @@ namespace miniPL {
             object value = Evaluate(expression.expr);
             if (expression.op.type == TokenType.NOT) {
                 CheckForBoolean(expression.op, value);
-                return (bool) value;
+                return !(bool) value;
             }
             return null;
         }
