@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace miniPL {
     class Program {
@@ -45,18 +43,15 @@ namespace miniPL {
 
         private static void Run(string source, bool printAST) {
             Scanner scanner = new Scanner(source);
-            List<Token> tokens = scanner.ScanTokens();
+            Token[] tokens = scanner.ScanTokens();
             Parser parser = new Parser(tokens);
-            List<Statement> statements = parser.Parse();
+            Statement[] statements = parser.Parse();
 
             if (hadError) return;
 
             if (printAST) {
                 ASTPrinter printer = new ASTPrinter(2);
-                foreach (Statement statement in statements) {
-                    string tree = printer.Print(statement);
-                    Console.WriteLine(tree);
-                }
+                Console.WriteLine(printer.Print(statements));
             } else {
                 interpreter.Interpret(statements);
             }

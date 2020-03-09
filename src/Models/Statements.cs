@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace miniPL {
     public interface Statement {
         public T Accept<T>(Visitor<T> visitor);
@@ -26,14 +24,14 @@ namespace miniPL {
         public readonly Expression start;
         public readonly Token range;
         public readonly Expression end;
-        public readonly List<Statement> statements;
+        public readonly Statement[] statements;
 
         public ForLoop(
             Token ident,
             Expression start,
             Token range,
             Expression end,
-            List<Statement> statements
+            Statement[] statements
         ) {
             this.ident = ident;
             this.start = start;

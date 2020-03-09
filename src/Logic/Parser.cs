@@ -2,17 +2,17 @@ using System.Collections.Generic;
 
 namespace miniPL {
     public class Parser {
-        private readonly List<Token> tokens;
+        private readonly Token[] tokens;
         private int current = 0;
 
-        public Parser(List<Token> tokens) {
+        public Parser(Token[] tokens) {
             this.tokens = tokens;
         }
 
-        public List<Statement> Parse() {
+        public Statement[] Parse() {
             List<Statement> statements = new List<Statement>();
             while (!IsEnd()) statements.Add(Stmt());
-            return statements;
+            return statements.ToArray();
         }
 
         private Statement Stmt() {
@@ -82,7 +82,7 @@ namespace miniPL {
             Consume(TokenType.FOR, "Expected 'for' after 'end' keyword.");
             Consume(TokenType.SEMICOLON, "Expected ';' after closing 'for' keyword.");
 
-            return new ForLoop(ident, start, range, end, statements);
+            return new ForLoop(ident, start, range, end, statements.ToArray());
         }
 
         private Statement ReadStatement() {

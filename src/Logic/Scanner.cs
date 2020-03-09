@@ -12,7 +12,7 @@ namespace miniPL {
             this.source = source;
         }
 
-        public List<Token> ScanTokens() {
+        public Token[] ScanTokens() {
             List<Token> tokens = new List<Token>();
             while (!IsEOF()) tokens.Add(ScanToken());
             Token last = tokens[tokens.Count - 1];
@@ -21,7 +21,7 @@ namespace miniPL {
             if (last.type != TokenType.EOF) {
                 tokens.Add(new Token(TokenType.EOF, "", null, line));
             }
-            return tokens;
+            return tokens.ToArray();
         }
 
         private Token ScanToken() {

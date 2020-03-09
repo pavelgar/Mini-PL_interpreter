@@ -3,15 +3,24 @@ using System.Text;
 namespace miniPL {
     class ASTPrinter : Visitor<string> {
 
-        private int indent = 0;
-        private readonly int increase;
+        private int indent;
+        private readonly int increment;
 
-        public ASTPrinter() {
-            this.increase = 4;
+        public ASTPrinter(int increment) {
+            this.indent = 0;
+            this.increment = increment;
         }
 
-        public ASTPrinter(int indent) {
-            this.increase = indent;
+        public string Print(Statement[] statements) {
+            StringBuilder builder = new StringBuilder("Program (\n");
+            indent += increment;
+            foreach (Statement statement in statements) {
+                builder.Append(new string(' ', indent));
+                builder.Append(Print(statement));
+            }
+
+            builder.Append("\n)");
+            return builder.ToString();
         }
 
         public string Print(Statement statement) {
@@ -27,7 +36,8 @@ namespace miniPL {
         }
 
         public string VisitLiteralExpression(Literal expression) {
-            return expression.value == null ? "null" : expression.value.ToString();
+            string value = expression.value == null ? "null" : expression.value.ToString();
+            return $"Literal ({value})";
         }
 
         public string VisitUnaryExpression(Unary expression) {
@@ -35,7 +45,7 @@ namespace miniPL {
         }
 
         public string VisitVariableExpression(Variable variable) {
-            return variable.ident.rawValue;
+            return $"Variable ({variable.ident.rawValue})";
         }
 
         public string VisitAssignmentExpression(Assignment assingment) {
@@ -55,7 +65,7 @@ namespace miniPL {
         }
 
         public string VisitVarStatement(Var var) {
-            return Parenthesize($"Variable [{var.ident.rawValue} : {var.type.rawValue}]", var.expression);
+            return Parenthesize($"Var [{var.ident.rawValue} : {var.type.rawValue}]", var.expression);
         }
 
         public string VisitForStatement(ForLoop forLoop) {
@@ -68,7 +78,7 @@ namespace miniPL {
 
         private string Parenthesize(string name, params Expression[] expressions) {
             StringBuilder builder = new StringBuilder($"{name} (\n");
-            indent += increase;
+            indent += increment;
 
             foreach (Expression expression in expressions) {
                 builder.Append(new string(' ', indent));
@@ -76,7 +86,7 @@ namespace miniPL {
                 builder.Append('\n');
             }
 
-            indent -= increase;
+            indent -= increment;
             builder.Append(new string(' ', indent) + ")");
 
             return builder.ToString();

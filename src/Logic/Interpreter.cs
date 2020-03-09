@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace miniPL {
     public class Interpreter : Visitor<object> {
         Environment environment = new Environment();
 
-        public void Interpret(List<Statement> statements) {
+        public void Interpret(Statement[] statements) {
             try {
                 foreach (Statement statement in statements) {
                     Execute(statement);
