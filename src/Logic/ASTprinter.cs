@@ -1,14 +1,29 @@
-using System;
 using System.Text;
 
 namespace miniPL {
-    class AstPrinter : Visitor<string> {
+    class ASTPrinter : Visitor<string> {
+
+        private int indent = 0;
+        private readonly int increase;
+
+        public ASTPrinter() {
+            this.increase = 4;
+        }
+
+        public ASTPrinter(int indent) {
+            this.increase = indent;
+        }
+
+        public string Print(Statement statement) {
+            return statement.Accept(this);
+        }
+
         public string VisitBinaryExpression(Binary expression) {
-            return Parenthesize(expression.op.rawValue, expression.left, expression.right);
+            return Parenthesize($"Binary [{expression.op.rawValue}]", expression.left, expression.right);
         }
 
         public string VisitGroupingExpression(Grouping expression) {
-            return Parenthesize("group", expression.expr);
+            return Parenthesize("Group", expression.expr);
         }
 
         public string VisitLiteralExpression(Literal expression) {
@@ -16,53 +31,53 @@ namespace miniPL {
         }
 
         public string VisitUnaryExpression(Unary expression) {
-            return Parenthesize(expression.op.rawValue, expression.expr);
+            return Parenthesize($"Unary [{expression.op.rawValue}]", expression.expr);
         }
 
         public string VisitVariableExpression(Variable variable) {
-            throw new NotImplementedException();
+            return variable.ident.rawValue;
         }
 
         public string VisitAssignmentExpression(Assignment assingment) {
-            throw new NotImplementedException();
+            return Parenthesize($"Assignment [{assingment.ident.rawValue}]", assingment.expr);
         }
 
         public string VisitPrintStatement(Print print) {
-            throw new NotImplementedException();
+            return Parenthesize("Print", print.expression);
         }
 
         public string VisitAssertStatement(Assert assert) {
-            throw new NotImplementedException();
+            return Parenthesize("Assert", assert.expression);
         }
 
         public string VisitReadStatement(Read read) {
-            throw new NotImplementedException();
+            return $"Read [{read.ident.rawValue}]";
         }
 
         public string VisitVarStatement(Var var) {
-            throw new NotImplementedException();
+            return Parenthesize($"Variable [{var.ident.rawValue} : {var.type.rawValue}]", var.expression);
         }
 
         public string VisitForStatement(ForLoop forLoop) {
-            throw new NotImplementedException();
+            return Parenthesize($"ForLoop [{forLoop.ident.rawValue}]", forLoop.start, forLoop.end);
         }
 
         public string VisitExpressionStatement(ExpressionStmt expressionStmt) {
-            throw new NotImplementedException();
-        }
-
-        string Print(Expression expression) {
-            return expression.Accept(this);
+            return Parenthesize("Expression", expressionStmt.expression);
         }
 
         private string Parenthesize(string name, params Expression[] expressions) {
-            StringBuilder builder = new StringBuilder($"({name}");
+            StringBuilder builder = new StringBuilder($"{name} (\n");
+            indent += increase;
 
             foreach (Expression expression in expressions) {
-                builder.Append(" ");
+                builder.Append(new string(' ', indent));
                 builder.Append(expression.Accept(this));
+                builder.Append('\n');
             }
-            builder.Append(")");
+
+            indent -= increase;
+            builder.Append(new string(' ', indent) + ")");
 
             return builder.ToString();
         }

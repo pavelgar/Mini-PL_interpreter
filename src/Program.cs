@@ -10,21 +10,26 @@ namespace miniPL {
         // Define the interpreter here to persist the state. Matters only in prompt mode.
         static readonly Interpreter interpreter = new Interpreter();
         static int Main(string[] args) {
-            if (args.Length > 1) {
+            if (args.Length > 2) {
                 Console.WriteLine("ERROR: Too many arguments");
                 return 64;
-            } else if (args.Length == 1) {
-                RunFile(args[0]);
+            }
+            if (args.Length == 1) {
+                RunFile(args[0], false);
                 if (hadError) return 65;
                 return 1;
-            } else {
-                RunPrompt();
+            }
+            if (args.Length == 2 && (args[1] == "ast" || args[1] == "AST")) {
+                RunFile(args[0], true);
+                if (hadError) return 65;
                 return 1;
             }
+            RunPrompt();
+            return 1;
         }
 
-        private static void RunFile(string path) {
-            Run(File.ReadAllText(path));
+        private static void RunFile(string path, bool printAST) {
+            Run(File.ReadAllText(path), printAST);
         }
 
         private static void RunPrompt() {
@@ -35,6 +40,10 @@ namespace miniPL {
         }
 
         private static void Run(string source) {
+            Run(source, false);
+        }
+
+        private static void Run(string source, bool printAST) {
             Scanner scanner = new Scanner(source);
             List<Token> tokens = scanner.ScanTokens();
             Parser parser = new Parser(tokens);
@@ -42,7 +51,15 @@ namespace miniPL {
 
             if (hadError) return;
 
-            interpreter.Interpret(statements);
+            if (printAST) {
+                ASTPrinter printer = new ASTPrinter(2);
+                foreach (Statement statement in statements) {
+                    string tree = printer.Print(statement);
+                    Console.WriteLine(tree);
+                }
+            } else {
+                interpreter.Interpret(statements);
+            }
         }
 
         public static void Error(int line, string message) {
